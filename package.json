@@ -1,0 +1,16 @@
+{
+  "name": "kowalski",
+  "version": "1.0.0",
+  "description": "A slack bot for fun",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dillonchr",
+  "license": "MIT",
+  "dependencies": {
+    "botkit": "^0.4.9",
+    "jsdom": "^9.9.1",
+    "momentjs": "^2.0.0"
+  }
+}
