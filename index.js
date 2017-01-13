@@ -1,86 +1,20 @@
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ______     ______     ______   __  __     __     ______
- /\  == \   /\  __ \   /\__  _\ /\ \/ /    /\ \   /\__  _\
- \ \  __<   \ \ \/\ \  \/_/\ \/ \ \  _"-.  \ \ \  \/_/\ \/
- \ \_____\  \ \_____\    \ \_\  \ \_\ \_\  \ \_\    \ \_\
- \/_____/   \/_____/     \/_/   \/_/\/_/   \/_/     \/_/
-
-
- This is a sample Slack bot built with Botkit.
-
- This bot demonstrates many of the core features of Botkit:
-
- * Connect to Slack using the real time API
- * Receive messages based on "spoken" patterns
- * Reply to messages
- * Use the conversation system to ask questions
- * Use the built in storage system to store and retrieve information
- for a user.
-
- # RUN THE BOT:
-
- Get a Bot token from Slack:
-
- -> http://my.slack.com/services/new/bot
-
- Run your bot from the command line:
-
- token=<MY TOKEN> node slack_bot.js
-
- # USE THE BOT:
-
- Find your bot inside Slack to send it a direct message.
-
- Say: "Hello"
-
- The bot will reply "Hello!"
-
- Say: "who are you?"
-
- The bot will tell you its name, where it is running, and for how long.
-
- Say: "Call me <nickname>"
-
- Tell the bot your nickname. Now you are friends.
-
- Say: "who am I?"
-
- The bot will tell you your nickname, if it knows one for you.
-
- Say: "shutdown"
-
- The bot will ask if you are sure, and then shut itself down.
-
- Make sure to invite your bot into other channels using /invite @<my bot>!
-
- # EXTEND THE BOT:
-
- Botkit has many features for building cool and useful bots!
-
- Read all about it here:
-
- -> http://howdy.ai/botkit
-
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
 process.env.token = 'xoxb-125328283350-dcs7J8cxhCvQHCfO2L69z38u';
+
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.exit(1);
 }
 
-var Botkit = require('botkit/lib/Botkit.js');
-var os = require('os');
-
-var controller = Botkit.slackbot({
+let Botkit = require('botkit/lib/Botkit.js');
+let os = require('os');
+let controller = Botkit.slackbot({
     debug: true,
 });
-
-var bot = controller.spawn({
+let bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
-let gdq = require('./gdq-schedule');
+(require('./gdq-schedule/main'))(controller);
 
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function (bot, message) {
 
@@ -132,7 +66,7 @@ controller.hears(['(start|stop) book shopping mode'], 'direct_message,direct_men
 });
 
 controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_mention,mention', function (bot, message) {
-    var name = message.match[1];
+    let name = message.match[1];
     controller.storage.users.get(message.user, function (err, user) {
         if (!user) {
             user = {
@@ -242,37 +176,11 @@ controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function
 });
 
 
-controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your name'],
-    'direct_message,direct_mention,mention', function (bot, message) {
-
-        var hostname = os.hostname();
-        var uptime = formatUptime(process.uptime());
-
-        bot.reply(message,
-            ':robot_face: I am a bot named <@' + bot.identity.name +
-            '>. I have been running for ' + uptime + ' on ' + hostname + '.');
-
+controller.hears(['uptime', ], 'direct_message,direct_mention,mention', function (bot, message) {
+        let hostname = os.hostname();
+        let uptime = formatUptime(process.uptime());
+        bot.reply(message, `:robot_face: I have been running for ${uptime} on ${hostname}.`);
     });
-
-controller.hears(['gdq'], 'direct_message,direct_mention,mention', (b, m) => {
-    gdq()
-        .then(g => {
-            if (g && g.length) {
-                bot.reply(m, {
-                    attachments: g.slice(0, 5).map(e => ({
-                        author_name: e.runners,
-                        title: e.title,
-                        text: `Starts at *${e.start.format('h:mm A')}* and has an estimate of _${e.estimate}_, so expected to end at *${e.ends.format('h:mm A')}*.`,
-                        footer: 'GDQ',
-                        footer_icon: 'https://gamesdonequick.com/static/res/img/favicon/favicon.ico',
-                        mrkdwn_in: ['text']
-                    }))
-                });
-            } else {
-                bot.reply(m, 'Sorry, I got nothin\'.');
-            }
-        })
-});
 
 controller.hears('interactive', 'direct_message', function (bot, message) {
 
@@ -302,7 +210,7 @@ controller.hears('interactive', 'direct_message', function (bot, message) {
 });
 
 function formatUptime(uptime) {
-    var unit = 'second';
+    let unit = 'second';
     if (uptime > 60) {
         uptime = uptime / 60;
         unit = 'minute';
