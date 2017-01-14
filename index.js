@@ -1,4 +1,4 @@
-process.env.token = 'xoxb-125328283350-dcs7J8cxhCvQHCfO2L69z38u';
+require('dotenv').config();
 
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
@@ -10,6 +10,11 @@ let os = require('os');
 let controller = Botkit.slackbot({
     debug: false,
 });
+
+controller.setupWebserver(process.env.port, () => {
+    controller.createWebhookEndpoints(controller.webserver);
+});
+
 let bot = controller.spawn({
     token: process.env.token
 }).startRTM();
