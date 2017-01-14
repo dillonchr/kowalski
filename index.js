@@ -11,10 +11,6 @@ let controller = Botkit.slackbot({
     debug: false,
 });
 
-controller.setupWebserver(process.env.port, () => {
-    controller.createWebhookEndpoints(controller.webserver);
-});
-
 let bot = controller.spawn({
     token: process.env.token
 }).startRTM();
