@@ -8,13 +8,14 @@ if (!process.env.token) {
 let Botkit = require('botkit/lib/Botkit.js');
 let os = require('os');
 let controller = Botkit.slackbot({
-    debug: true,
+    debug: false,
 });
 let bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
 (require('./gdq-schedule/main'))(controller);
+(require('./bookmancy/main'))(controller);
 
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function (bot, message) {
 
@@ -34,33 +35,6 @@ controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', funct
             bot.reply(message, 'Hello ' + user.name + '!!');
         } else {
             bot.reply(message, 'Hello.');
-        }
-    });
-});
-
-controller.hears(['(start|stop) book shopping mode'], 'direct_message,direct_mention,mention', (bot, message) => {
-    let isStarting = message.match[1].toLowerCase() === 'start';
-    controller.storage.users.get(message.user, (err, user) => {
-        if (!user) {
-            user = {
-                id: message.user,
-                isBookShopping: false
-            };
-        }
-        if (isStarting) {
-            if (user.isBookShopping) {
-                bot.reply(message, 'You are already in book shopping mode!');
-            } else {
-                user.isBookShopping = true;
-                controller.storage.users.save(user, (err, id) => bot.reply(message, 'Okay, book shopping mode enabled.'));
-            }
-        } else {
-            if (!user.isBookShopping) {
-                bot.reply(message, 'You haven\'t even started book shopping mode yet.');
-            } else {
-                user.isBookShopping = false;
-                controller.storage.users.save(user, (err, id) => bot.reply(message, 'Okay, book shopping mode disabled.'));
-            }
         }
     });
 });

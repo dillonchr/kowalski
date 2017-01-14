@@ -1,7 +1,7 @@
 let gdq = require('./gdq-schedule');
 
 module.exports = (controller) => {
-    controller.hears(['gdq'], 'direct_message,direct_mention,mention', (b, m) => {
+    controller.hears(['gdq', ':video_game:'], 'direct_message,direct_mention,mention', (b, m) => {
         gdq()
             .then(g => {
                 if (g && g.length) {
@@ -20,4 +20,4 @@ module.exports = (controller) => {
                 }
             })
     });
-}
+};
