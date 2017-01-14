@@ -15,6 +15,7 @@ let bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
+(require('./server/main'))();
 (require('./gdq-schedule/main'))(controller);
 (require('./bookmancy/main'))(controller);
 
