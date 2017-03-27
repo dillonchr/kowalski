@@ -32,44 +32,55 @@ function search(message) {
     });
 }
 
+function isUserShopping(controller, m) {
+    controller.storage.users
+        .get(m.user, (err, user) => {
+            if (!user) {
+                user = {
+                    id: m.user,
+                    isBookShopping: true
+                };
+            }
+            return user.isBookShopping;
+        });
+}
+
 module.exports = controller => {
     controller.hears(['(start|stop) book shopping mode', ':book:'], 'direct_message', (b, m) => {
         let toggle = /book/i.test(m.text);
         let isStarting = m.match && m.match.length && m.match[1] && m.match[1].toLowerCase() === 'start';
-        controller.storage.users.get(m.user, (err, user) => {
-            if (!user) {
-                user = {
-                    id: m.user,
-                    isBookShopping: false
-                };
-            }
-            if(toggle) {
-                isStarting = !user.isBookShopping;
-            }
-            if (isStarting) {
-                if (user.isBookShopping) {
-                    b.reply(m, 'You are already in book shopping mode!');
-                } else {
-                    user.isBookShopping = true;
-                    controller.storage.users.save(user, (err, id) => b.reply(m, 'Okay, book shopping mode enabled.'));
+        isUserShopping(controller, m)
+            .then(isShopping => {
+                if (toggle) {
+                    isStarting = !isShopping;
                 }
-            } else {
-                if (!user.isBookShopping) {
-                    b.reply(m, 'You haven\'t even started book shopping mode yet.');
+                if (isStarting) {
+                    if (user.isBookShopping) {
+                        b.reply(m, 'You are already in book shopping mode!');
+                    } else {
+                        user.isBookShopping = true;
+                        controller.storage.users.save(user, (err, id) => b.reply(m, 'Okay, book shopping mode enabled.'));
+                    }
                 } else {
-                    user.isBookShopping = false;
-                    controller.storage.users.save(user, (err, id) => b.reply(m, 'Okay, book shopping mode disabled.'));
+                    if (!user.isBookShopping) {
+                        b.reply(m, 'You haven\'t even started book shopping mode yet.');
+                    } else {
+                        user.isBookShopping = false;
+                        controller.storage.users.save(user, (err, id) => b.reply(m, 'Okay, book shopping mode disabled.'));
+                    }
                 }
-            }
-        });
+            });
     });
 
     controller.on('direct_message', (b, m) => {
-        controller.storage.users.get(m.user, (err, user) => {
-            if (user && user.isBookShopping && m.text.indexOf(',') !== -1) {
-                search(m.text)
-                    .then(x => b.reply(m, x));
-            }
-        });
+        if (m.text.indexOf(',') !== -1) {
+            isUserShopping(controller, m)
+                .then(isShopping => {
+                    if (isShopping) {
+                        search(m.text)
+                            .then(x => b.reply(m, x));
+                    }
+                });
+        }
     });
 };
