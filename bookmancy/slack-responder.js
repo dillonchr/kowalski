@@ -12,6 +12,7 @@ module.exports = slacker = (query, searchUrl, x) => {
      */
     let searchTitle = Object.keys(query)
         .map(k => query[k])
+        .reverse()
         .join(' - ');
     /**
      * counting unshown results here

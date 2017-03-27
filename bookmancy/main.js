@@ -18,10 +18,6 @@ function search(message) {
             let searchUrl = urlographer(query);
             request(searchUrl)
                 .then(x => res(slackResponder(query, searchUrl, x)), err => console.error(err.toString()));
-            // res({
-            //     "response_type": "ephemeral",
-            //     "text": `Checking out ${Object.keys(query).reverse().map(k => k + ': ' + query[k]).join(', ')}`
-            // });
         } catch (err) {
             res({
                 "response_type": "ephemeral",
@@ -32,44 +28,26 @@ function search(message) {
     });
 }
 
-module.exports = controller => {
-    controller.hears(['(start|stop) book shopping mode', ':book:'], 'direct_message', (b, m) => {
-        let toggle = /book/i.test(m.text);
-        let isStarting = m.match && m.match.length && m.match[1] && m.match[1].toLowerCase() === 'start';
-        controller.storage.users.get(m.user, (err, user) => {
-            if (!user) {
-                user = {
-                    id: m.user,
-                    isBookShopping: false
-                };
-            }
-            if(toggle) {
-                isStarting = !user.isBookShopping;
-            }
-            if (isStarting) {
-                if (user.isBookShopping) {
-                    b.reply(m, 'You are already in book shopping mode!');
-                } else {
-                    user.isBookShopping = true;
-                    controller.storage.users.save(user, (err, id) => b.reply(m, 'Okay, book shopping mode enabled.'));
-                }
-            } else {
-                if (!user.isBookShopping) {
-                    b.reply(m, 'You haven\'t even started book shopping mode yet.');
-                } else {
-                    user.isBookShopping = false;
-                    controller.storage.users.save(user, (err, id) => b.reply(m, 'Okay, book shopping mode disabled.'));
-                }
-            }
-        });
-    });
+const CONF_RESPONSES = [
+    'Looking it up',
+    'Checking it out',
+    'Working on it',
+    'Searching now',
+    'ON IT MAN'
+];
+function getConfirmationResponse() {
+    return CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)];
+}
 
+module.exports = controller => {
     controller.on('direct_message', (b, m) => {
-        controller.storage.users.get(m.user, (err, user) => {
-            if (user && user.isBookShopping && m.text.indexOf(',') !== -1) {
-                search(m.text)
-                    .then(x => b.reply(m, x));
-            }
-        });
+        if (m.text.indexOf(',') !== -1) {
+            b.reply(m, {
+                response_type: 'ephemeral',
+                text: `:mag_right: ${getConfirmationResponse()}`
+            });
+            search(m.text)
+                .then(x => b.reply(m, x));
+        }
     });
 };
