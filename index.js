@@ -18,7 +18,7 @@ let bot = controller.spawn({
 (require('./server/main'))();
 (require('./gdq-schedule/main'))(controller);
 (require('./bookmancy/main'))(controller);
-
+(require('./daily-text/main'))(controller);
 
 controller.hears(['uptime',], 'direct_message,direct_mention,mention', function (b, m) {
     b.reply(m, `:robot_face: I have been running for ${formatUptime(process.uptime())} on ${os.hostname()}.`);
