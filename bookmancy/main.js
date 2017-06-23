@@ -33,7 +33,11 @@ const CONF_RESPONSES = [
     'Checking it out',
     'Working on it',
     'Searching now',
-    'ON IT MAN'
+    'ON IT MAN',
+    'She\'s going as fast as she can, Captain!',
+    'Get ready for this',
+    'I hope you have enough RAM',
+    'Save a tree. Use 3G.'
 ];
 function getConfirmationResponse() {
     return CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)];
