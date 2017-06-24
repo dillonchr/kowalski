@@ -1,40 +1,37 @@
-const MongoClient = require('mongodb').MongoClient;
-const collection = 'budget';
+const SimpleDb = require('../utils/simple-db');
 
-class Budget {
+class Budget extends SimpleDb {
     constructor() {
-        this.dbPromise = null;
+        super('budget');
+        this.paycheckInstance = null;
     }
 
-    getDb() {
-        if (!this.dbPromise) {
-            this.dbPromise = MongoClient.connect(process.env.mongouri);
-        }
-        return this.dbPromise;
+    set paycheck(p) {
+        this.paycheckInstance = p;
+        this.paycheckInstance.addResetListener(() => this.onPaycheckReset());
     }
 
-    getResetBudgetSheet(userId) {
+    onPaycheckReset() {
+        const docTemplate = this.getDefaultDocument('');
+        delete docTemplate._id;
+        return this.resetAllDocuments(docTemplate);
+    }
+
+    getDefaultDocument(userId) {
         return {
             _id: userId,
-            balance: 120.80,
             transactions: []
         };
     }
 
-    getCollection() {
-        return this.getDb()
-            .then(d => d.collection(collection));
-    }
-
     getTransactions(userId) {
-        return this.getCollection()
-            .then(c => c.findOne({_id: userId}))
-            .then(doc => doc || this.getResetBudgetSheet(userId));
+        return this.getDocumentById(userId)
+            .then(doc => doc || this.getDefaultDocument(userId));
     }
 
     canBuy(userId, price) {
-        return this.getTransactions(userId)
-            .then(trans => trans.balance >= price);
+        return this.balance(userId)
+            .then(bal => bal >= price);
     }
 
     bought(userId, description, price) {
@@ -43,31 +40,29 @@ class Budget {
             return Promise.reject('`Price` isn\'t a proper number.');
         }
 
-        return Promise.all([
-            this.getCollection(),
-            this.getTransactions(userId)
-        ])
-            .then(([col, trans]) => {
-                const cleanPrice = parseFloat(price);
+        return this.getTransactions(userId)
+            .then(trans => {
                 trans.transactions.push({
                     description: description,
-                    price: cleanPrice
+                    price: parseFloat(price)
                 });
-                trans.balance -= cleanPrice;
-                return col.update({_id: userId}, trans, {upsert: true})
-                    .then(() => trans.balance.toFixed(2));
+                return this.saveDocument(trans)
+                    .then(() => this.balance(userId));
             });
     }
 
     balance(userId) {
-        return this.getTransactions(userId)
-            .then(t => t.balance.toFixed(2));
+        return Promise.all([
+            this.paycheckInstance.getTransactions(),
+            this.getTransactions(userId)
+        ])
+            .then(([paycheck, user]) => user.transactions.reduce((sum, t) => sum - t.price, paycheck.balance/20))
+            .then(t => t.toFixed(2));
     }
 
     resetBudget(userId) {
-        return this.getCollection()
-            .then(c => c.update({_id: userId}, this.getResetBudgetSheet(userId), {upsert: true}));
+        return this.saveDocument(this.getDefaultDocument(userId));
     }
 }
 
-module.exports = new Budget();
+module.exports = Budget;

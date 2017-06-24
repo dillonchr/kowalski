@@ -1,4 +1,4 @@
-const budget = require('./budget');
+const budget = new (require('./budget'))();
 const is = {
     budget: s => /^budget /i.test(s),
     balance: s => /^balance/i.test(s),
@@ -14,7 +14,9 @@ function reply(b, m, text) {
     });
 }
 
-module.exports = controller => {
+module.exports = (controller, paycheckInstance) => {
+    budget.paycheck = paycheckInstance;
+    
     controller.on('direct_message', (b, m) => {
         const message = m.text.trim();
         if (is.budget(message)) {
