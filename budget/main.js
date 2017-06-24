@@ -52,7 +52,7 @@ module.exports = (controller, paycheckInstance) => {
                 });
             } else if (is.bought(action)) {
                 budget.bought(uId, ...action.substr(7).split(','))
-                    .then(res => reply(b, m, `You have $${res} left`))
+                    .then(({bal}) => reply(b, m, `You have $${bal} left`))
                     .catch(err => reply(b, m, err));
             } else if (is.canBuy(action)) {
                 const amount = action.match(/\d+\.?\d+/);
