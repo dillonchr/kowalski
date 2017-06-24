@@ -45,7 +45,7 @@ function getConfirmationResponse() {
 
 module.exports = controller => {
     controller.on('direct_message', (b, m) => {
-        if (m.text.indexOf(',') !== -1) {
+        if (!/^budget /i.test(m.text) && m.text.indexOf(',') !== -1) {
             b.reply(m, {
                 response_type: 'ephemeral',
                 text: `:mag_right: ${getConfirmationResponse()}`
