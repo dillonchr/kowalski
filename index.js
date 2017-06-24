@@ -20,11 +20,15 @@ let bot = controller.spawn({
 (require('./bookmancy/main'))(controller);
 (require('./daily-text/main'))(controller);
 (require('./paycheck/main'))(controller);
-//(require('./budget/main'))(controller);
 
 controller.hears(['uptime',], 'direct_message,direct_mention,mention', function (b, m) {
     b.reply(m, `:robot_face: I have been running for ${formatUptime(process.uptime())} on ${os.hostname()}.`);
 });
+
+controller.hears(['whoami'], 'direct_message', (b, m) => b.reply(m, {
+        response_type: 'ephemeral',
+        text: m.user
+    }));
 
 function formatUptime(uptime) {
     let unit = 'second';
