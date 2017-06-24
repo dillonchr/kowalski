@@ -33,9 +33,9 @@ class SimpleDb {
             .then(c => c.find().toArray);
     }
 
-    resetAllDocuments(template) {
+    removeAllDocuments(template) {
         return this.getCollection()
-            .then(c => c.update({}, template, {many: true}));
+            .then(c => c.remove({}));
     }
 }
 

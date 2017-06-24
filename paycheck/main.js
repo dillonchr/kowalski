@@ -3,7 +3,8 @@ const is = {
     module: s => /^paycheck /i.test(s),
     balance: s => /^balance/i.test(s),
     bought: s => /^pay /i.test(s),
-    reset: s => /^reset/i.test(s)
+    reset: s => /^reset/i.test(s),
+    help: s => /^help/i.test(s)
 };
 
 function reply(b, m, text) {
@@ -22,7 +23,14 @@ module.exports = controller => {
         if (is.module(message)) {
             const action = message.substr(9);
 
-            if (is.balance(action)) {
+            if (is.help(action)) {
+                const helpText = [
+                    '`paycheck balance`\ngets remaining balance',
+                    '`paycheck pay {amount}`\nadd transaction with just a dollar amount',
+                    '`paycheck reset {paycheck total}`\nresets paycheck balance and budgets\n`paycheck total` is optional but can be used to reset beginning of paycheck balance to specific amount otherwise it will default to $2656.65'
+                ].join('\n\n');
+                b.reply(m, helpText);
+            } else if (is.balance(action)) {
                 paycheck.balance()
                     .then(bal => reply(b, m, `You have $${bal}`));
             } else if (is.bought(action)) {

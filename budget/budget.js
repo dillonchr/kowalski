@@ -12,9 +12,9 @@ class Budget extends SimpleDb {
     }
 
     onPaycheckReset() {
-        const docTemplate = this.getDefaultDocument('');
-        delete docTemplate._id;
-        return this.resetAllDocuments(docTemplate);
+        this.removeAllDocuments()
+            .then(() => console.log('Cleared budget collection'))
+            .catch(err => console.error('Budget->clearCollection error', err));
     }
 
     getDefaultDocument(userId) {
@@ -56,12 +56,15 @@ class Budget extends SimpleDb {
             this.paycheckInstance.getTransactions(),
             this.getTransactions(userId)
         ])
-            .then(([paycheck, user]) => user.transactions.reduce((sum, t) => sum - t.price, paycheck.balance/20))
-            .then(t => t.toFixed(2));
-    }
-
-    resetBudget(userId) {
-        return this.saveDocument(this.getDefaultDocument(userId));
+            .then(([paycheck, user]) => {
+                const bal = user.transactions
+                    .reduce((sum, t) => sum - t.price, paycheck.balance/20)
+                    .toFixed(2);
+                return {
+                    bal: bal,
+                    trans: user.transactions
+                };
+        });
     }
 }
 
