@@ -20,7 +20,7 @@ module.exports = url => {
 };
 
 function getLocalMoment(d) {
-    return moment(d).utcOffset('-06:00');
+    return moment(d).utcOffset('-05:00');
 }
 
 function parsePage(window) {
