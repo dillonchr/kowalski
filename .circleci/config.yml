@@ -1,0 +1,11 @@
+version: 2
+jobs:
+	build:
+		steps:
+			- checkout
+			- run:
+				name: install
+				command: npm i
+			- run:
+				name: test
+				command: jest
