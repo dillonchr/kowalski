@@ -24,8 +24,14 @@ class Paycheck extends SimpleDb {
 
     pay(price) {
         if (isNaN(price)) {
-            console.error(price);
-            return Promise.reject(`\`${price}\` isn\'t a proper amount.`);
+            const newPrice = price
+                .split(',')
+                .find(p => !isNaN(p));
+            if (!newPrice) {
+                console.error(price);
+                return Promise.reject(`\`${price}\` isn\'t a proper amount.`);
+            }
+            price = newPrice;
         }
 
         return this.getTransactions()
