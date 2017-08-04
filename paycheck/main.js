@@ -27,7 +27,7 @@ module.exports = controller => {
                 if (is.help(action)) {
                     const helpText = [
                         '`paycheck balance`\ngets remaining balance',
-                        '`paycheck pay {amount}`\nadd transaction with just a dollar amount',
+                        '`paycheck pay {amount}, {optional description}`\nadd transaction with just a dollar amount',
                         '`paycheck reset {paycheck total}`\nresets paycheck balance and budgets\n`paycheck total` is optional but can be used to reset beginning of paycheck balance to specific amount otherwise it will default to $2656.65'
                     ].join('\n\n');
                     b.reply(m, helpText);
