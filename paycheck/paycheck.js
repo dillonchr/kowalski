@@ -53,10 +53,10 @@ class Paycheck extends SimpleDb {
         this.resetListeners.push(callback);
     }
 
-    onReset() {
+    onReset(balance) {
         this.resetListeners.forEach(cb => {
             try {
-                cb();
+                cb(balance);
             } catch (handlerError) {
                 console.error('Paycheck.onResetHandler error', handlerError);
             }
@@ -64,10 +64,13 @@ class Paycheck extends SimpleDb {
     }
 
     reset(balance) {
-        const resetDoc = this.getDefaultDocument(balance || 2656.65);
+        if (!balance) {
+            balance = 2656.65;
+        }
+        const resetDoc = this.getDefaultDocument(balance);
         return this.saveDocument(resetDoc)
             .then(() => {
-                this.onReset();
+                this.onReset(balance);
                 return this.balance();
             });
     }

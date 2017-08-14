@@ -30,7 +30,7 @@ class SimpleDb {
 
     getAllDocuments() {
         return this.getCollection()
-            .then(c => c.find().toArray);
+            .then(c => c.find().toArray());
     }
 
     removeAllDocuments(template) {

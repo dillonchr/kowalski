@@ -8,13 +8,24 @@ class Budget extends SimpleDb {
 
     set paycheck(p) {
         this.paycheckInstance = p;
-        this.paycheckInstance.addResetListener(() => this.onPaycheckReset());
+        this.paycheckInstance.addResetListener(this.onPaycheckReset.bind(this));
     }
 
-    onPaycheckReset() {
-        this.removeAllDocuments()
-            .then(() => console.log('Cleared budget collection'))
-            .catch(err => console.error('Budget->clearCollection error', err));
+    onPaycheckReset(newBalance) {
+        this.getAllDocuments()
+            .then(docs => {
+                return Promise.all(docs.map(doc => {
+                    const bal = this.getRemainingBalanceForUser(doc.transactions, newBalance);
+                    doc.transactions = [];
+                    if (bal > 0) {
+                        doc.transactions.push({
+                            description: 'Rollover balance',
+                            price: bal * -1
+                        });
+                    }
+                    return this.saveDocument(doc);
+                }));
+            });
     }
 
     getDefaultDocument(userId) {
@@ -36,8 +47,14 @@ class Budget extends SimpleDb {
 
     bought(userId, description, price) {
         if (isNaN(price)) {
-            console.error(price);
-            return Promise.reject('`Price` isn\'t a proper number.');
+            if (!isNaN(description) && description > 0) {
+                const oldDescription = description;
+                description = price;
+                price = oldDescription;
+            } else {
+                console.error(price);
+                return Promise.reject('`Price` isn\'t a proper number.');
+            }
         }
 
         return this.getTransactions(userId)
@@ -51,15 +68,19 @@ class Budget extends SimpleDb {
             });
     }
 
+    getRemainingBalanceForUser(transactions, wagepacket) {
+        return transactions
+            .reduce((sum, t) => sum - t.price, wagepacket/20)
+            .toFixed(2);
+    }
+
     balance(userId) {
         return Promise.all([
             this.paycheckInstance.getTransactions(),
             this.getTransactions(userId)
         ])
             .then(([paycheck, user]) => {
-                const bal = user.transactions
-                    .reduce((sum, t) => sum - t.price, paycheck.balance/20)
-                    .toFixed(2);
+                const bal = this.getRemainingBalanceForUser(user.transactions, paycheck.balance);
                 return {
                     bal: bal,
                     trans: user.transactions
