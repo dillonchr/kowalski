@@ -28,6 +28,11 @@ class SimpleDb {
             .then(c => c.update({_id: doc._id}, doc, {upsert: !!upsert}));
     }
 
+    saveMany(docs) {
+        return this.getCollection()
+            .then(c => c.insertMany(docs));
+    }
+
     getAllDocuments() {
         return this.getCollection()
             .then(c => c.find().toArray());
