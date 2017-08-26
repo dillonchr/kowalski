@@ -5,12 +5,12 @@ module.exports = slacker = (query, searchUrl, x) => {
      * slack doesn't need full results listed, just first three
      * @type {*}
      */
-    let sharedResults = x.slice(0, RESULTS_LIMIT);
+    const sharedResults = x.slice(0, RESULTS_LIMIT);
     /**
      * search title for quick reference in searches of old queries
      * @type {string}
      */
-    let searchTitle = Object.keys(query)
+    const searchTitle = Object.keys(query)
         .filter(k => !!query[k].length)
         .map(k => query[k])
         .join(' - ');
@@ -18,19 +18,19 @@ module.exports = slacker = (query, searchUrl, x) => {
      * counting unshown results here
      * @type {string}
      */
-    let hiddenResultsIdenifier = x.length === MAX_RESULTS ? 'many' : x.length - RESULTS_LIMIT > 0 ? 'some' : 'no';
+    const hiddenResultsIdenifier = x.length === MAX_RESULTS ? 'many' : x.length - RESULTS_LIMIT > 0 ? 'some' : 'no';
     /**
      * color-coding the message based on result count
      * @type {string}
      */
-    let hiddenResultsColor = hiddenResultsIdenifier === 'many' ?
+    const hiddenResultsColor = hiddenResultsIdenifier === 'many' ?
         '01897B' : hiddenResultsIdenifier === 'some' ? 'FDD838' : 'EF5A53';
     /**
      * building response in var for debugging
      * FIXME: just return stringified response after tested fully
      * @type {{attachments: [*]}}
      */
-    let response = {
+    return {
         response_type: 'in_channel',
         text: `Searched for \`${searchTitle}\``,
         mrkdown: true,
@@ -46,18 +46,15 @@ module.exports = slacker = (query, searchUrl, x) => {
                 ts: Math.floor(new Date().getTime() / 1000)
             }
         ]
+            .concat(sharedResults.map(r => ({
+                    color: `#${hiddenResultsColor}`,
+                    title: '$' + r.price + r.shipping + (r.year ? ` (${r.year})` : ''),
+                    text: r.about.length > 120 ?
+                        r.about.substr(0, 120) + '...' :
+                        r.about,
+                    fallback: r.price,
+                    thumb_url: r.image
+                }))
+            )
     };
-
-    sharedResults.map(r => ({
-        color: `#${hiddenResultsColor}`,
-        title: '$' + r.price + r.shipping + (r.year ? ` (${r.year})` : ''),
-        text: r.about.length > 120 ?
-            r.about.substr(0, 120) + '...' :
-            r.about,
-        fallback: r.price,
-        thumb_url: r.image
-    }))
-        .forEach(r => response.attachments.push(r));
-
-    return response;
 };

@@ -14,8 +14,15 @@ function search(message) {
                 });
             }
 
-            let query = slackInterpreter(message);
-            let searchUrl = urlographer(query);
+            const [author, title, publisher, year, format] = message.split(',');
+            const query = {
+                author: author && author.trim(),
+                title: title && title.trim(),
+                publisher: publisher && publisher.trim(),
+                year: year && year.trim(),
+                format: isNaN(format) ? format && format.trim() : year && trim()
+            };
+            const searchUrl = urlographer(query);
             request(searchUrl)
                 .then(x => res(slackResponder(query, searchUrl, x)), err => console.error(err.toString()));
         } catch (err) {
