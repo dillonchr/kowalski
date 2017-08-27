@@ -22,8 +22,8 @@ function search(message) {
         author: author,
         title: title,
         publisher: publisher,
-        year: !isNaN(format) ? format : year,
-        format: !isNaN(year) ? year : format
+        year: format && !isNaN(format) ? format : !isNaN(year) && year,
+        format: isNaN(year) ? year : format
     };
 
     return request(query)
