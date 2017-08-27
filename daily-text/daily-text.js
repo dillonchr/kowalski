@@ -1,25 +1,10 @@
-let jsdom = require('jsdom');
+const getDom = require('../utils/getDom');
 
-module.exports = url => {
-    if (!url) {
-        url = 'https://wol.jw.org/en/wol/h/r1/lp-e';
-    }
-    return new Promise((resolve, reject) => {
-        jsdom.env(url, (err, window) => {
-            if (!err) {
-                let results = parsePage(window);
-                resolve(results);
-            } else {
-                console.log('nope-dt', err);
-                reject(err);
-            }
-        });
-    });
-};
+module.exports = () => getDom('https://wol.jw.org/en/wol/h/r1/lp-e')
+    .then(parsePage);
 
-function parsePage(window) {
+function parsePage(document) {
     try {
-        const document = window.document;
         const text = document.querySelectorAll('.tabContent')[1];
         const themeScriptureRaw = text.querySelector('.themeScrp > em').textContent.trim();
 

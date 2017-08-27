@@ -1,4 +1,4 @@
-const jsdom = require('jsdom');
+const getDom = require('../utils/getDom');
 const SimpleDb = require('../utils/simple-db');
 const ROSTER_URL = 'https://consumeraffairs.com/about/staff/';
 const COLL_NAME = 'employees';
@@ -13,30 +13,21 @@ class Fired extends SimpleDb {
     }
 
     getCurrentRoster() {
-        return new Promise((res, rej) => {
-            jsdom.env(ROSTER_URL, (err, window) => {
-                if (!err) {
-                    try {
-                        const roster = [...window.document.querySelectorAll('.vcard')]
-                            .map(e => ({
-                                name: e.querySelector('h2.fn').innerHTML,
-                                profilePic: e.querySelector('.photo.head_shot').src,
-                                position: e.querySelector('h3.title').innerHTML,
-                                bio: e.querySelector('.bio.entry > p').innerHTML.trim(),
-                                fired: false
-                            }));
-                        if (!roster || !roster.length) {
-                            throw new Error('no employee data found on domQuery');
-                        }
-                        res(roster);
-                    } catch (dataError) {
-                        rej(dataError);
-                    }
-                } else {
-                    rej(err);
+        return getDom(ROSTER_URL)
+            .then(document => {
+                const roster = [...document.querySelectorAll('.vcard')]
+                    .map(e => ({
+                        name: e.querySelector('h2.fn').innerHTML,
+                        profilePic: e.querySelector('.photo.head_shot').src,
+                        position: e.querySelector('h3.title').innerHTML,
+                        bio: e.querySelector('.bio.entry > p').innerHTML.trim(),
+                        fired: false
+                    }));
+                if (!roster || !roster.length) {
+                    throw new Error('no employee data found on domQuery');
                 }
+                return roster;
             });
-        });
     }
 
     list() {

@@ -18,7 +18,9 @@
     "express": "^4.14.0",
     "jsdom": "^9.9.1",
     "momentjs": "^2.0.0",
-    "mongodb": "^2.2.29"
+    "mongodb": "^2.2.29",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4"
   },
   "devDependencies": {
     "jest": "^20.0.4"
