@@ -40,7 +40,6 @@ class Searcher {
     }
 
     apiFetch(options) {
-        console.log(options.q);
         return request(this.buildApiUrl(options))
             .then(r => {
                 const data = r.trim();

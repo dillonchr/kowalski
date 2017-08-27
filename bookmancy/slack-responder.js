@@ -1,6 +1,6 @@
 module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
     const MAX_RESULTS = 50;
-    const RESULTS_LIMIT = 5;
+    const RESULTS_LIMIT = 7;
     /**
      * slack doesn't need full results listed, just first three
      * @type {*}
@@ -10,7 +10,7 @@ module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
      * counting unshown results here
      * @type {string}
      */
-    const hiddenResultsIdenifier = x.length === MAX_RESULTS ? 'many' : x.length - RESULTS_LIMIT > 0 ? 'some' : 'no';
+    const hiddenResultsIdenifier = x.length >= MAX_RESULTS ? 'many' : x.length - RESULTS_LIMIT > 0 ? 'some' : 'no';
     /**
      * color-coding the message based on result count
      * @type {string}
