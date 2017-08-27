@@ -1,63 +1,57 @@
-module.exports = slacker = (query, searchUrl, x) => {
+module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
     const MAX_RESULTS = 50;
-    const RESULTS_LIMIT = 5;
+    const RESULTS_LIMIT = 7;
     /**
      * slack doesn't need full results listed, just first three
      * @type {*}
      */
-    let sharedResults = x.slice(0, RESULTS_LIMIT);
-    /**
-     * search title for quick reference in searches of old queries
-     * @type {string}
-     */
-    let searchTitle = Object.keys(query)
-        .filter(k => !!query[k].length)
-        .map(k => query[k])
-        .join(' - ');
+    const sharedResults = x.slice(0, RESULTS_LIMIT);
     /**
      * counting unshown results here
      * @type {string}
      */
-    let hiddenResultsIdenifier = x.length === MAX_RESULTS ? 'many' : x.length - RESULTS_LIMIT > 0 ? 'some' : 'no';
+    const hiddenResultsIdenifier = x.length >= MAX_RESULTS ? 'many' : x.length - RESULTS_LIMIT > 0 ? 'some' : 'no';
     /**
      * color-coding the message based on result count
      * @type {string}
      */
-    let hiddenResultsColor = hiddenResultsIdenifier === 'many' ?
-        '01897B' : hiddenResultsIdenifier === 'some' ? 'FDD838' : 'EF5A53';
+    const hiddenResultsColor = '#' + (hiddenResultsIdenifier === 'many' ?
+        '01897B' : hiddenResultsIdenifier === 'some' ? 'FDD838' : 'EF5A53');
     /**
      * building response in var for debugging
      * FIXME: just return stringified response after tested fully
      * @type {{attachments: [*]}}
      */
-    let response = {
+    return {
         response_type: 'in_channel',
         text: `Searched for \`${searchTitle}\``,
         mrkdown: true,
         attachments: [
             {
                 author_name: "Bookmancy Price Results",
-                color: `#${hiddenResultsColor}`,
+                color: hiddenResultsColor,
                 text: `There are ${hiddenResultsIdenifier} more results in the search above :point_up:`,
                 title: `See Search Results For: ${searchTitle}`,
                 title_link: searchUrl,
-                footer: 'AbeBooks API',
-                footer_icon: 'https://www.abebooks.com/images/gateway/heroes/bookbird-avatar.png',
-                ts: Math.floor(new Date().getTime() / 1000)
+                footer: `${isEbay ? 'ebay' : 'AbeBooks'} API`,
+                footer_icon: isEbay ? 'https://pages.ebay.com/favicon.ico' : 'https://www.abebooks.com/images/gateway/heroes/bookbird-avatar.png'
             }
         ]
+            .concat(sharedResults.map(r => {
+                const title = [`$${r.price}`, r.shipping, r.year && '(' + r.year + ')']
+                    .filter(s => !!s)
+                    .join(' ');
+                const text = r.about.length > 120 ? r.about.substr(0, 120) + '...' : r.about;
+
+                return {
+                    color: hiddenResultsColor,
+                    title: title,
+                    text: text,
+                    fallback: r.price,
+                    thumb_url: r.image,
+                    title_link: r.url,
+                    ts: r.date
+                };
+            }))
     };
-
-    sharedResults.map(r => ({
-        color: `#${hiddenResultsColor}`,
-        title: '$' + r.price + r.shipping + (r.year ? ` (${r.year})` : ''),
-        text: r.about.length > 120 ?
-            r.about.substr(0, 120) + '...' :
-            r.about,
-        fallback: r.price,
-        thumb_url: r.image
-    }))
-        .forEach(r => response.attachments.push(r));
-
-    return response;
 };

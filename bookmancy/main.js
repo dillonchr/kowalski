@@ -1,57 +1,33 @@
-let request = require('./request-builder');
-let urlographer = require('./url-builder');
-let slackResponder = require('./slack-responder');
-let slackInterpreter = require('./slack-interpreter');
+const bookmancy = require('./bookmancy');
+const ebay = new (require('./ebay-searcher'))();
+const slackResponder = require('./slack-responder');
+const is = {
+    abe: s => /^abe /i.test(s),
+    ebay: s => /^ebay /i.test(s),
+    sold: s => /^sold /i.test(s),
+    live: s => /^live /i.test(s)
+};
 
-function search(message) {
-    return new Promise((res, rej) => {
-        try {
-            if (message === 'help') {
-                return res.send({
-                    response_type: 'ephemeral',
-                    text: 'search for book prices with `author, title, publisher, year, format`',
-                    mrkdown: true
-                });
-            }
-
-            let query = slackInterpreter(message);
-            let searchUrl = urlographer(query);
-            request(searchUrl)
-                .then(x => res(slackResponder(query, searchUrl, x)), err => console.error(err.toString()));
-        } catch (err) {
-            res({
-                "response_type": "ephemeral",
-                "text": "There was a problem processing your search. Try again soon."
-            });
-            console.error(err);
-        }
-    });
-}
-
-const CONF_RESPONSES = [
-    'Looking it up',
-    'Checking it out',
-    'Working on it',
-    'Searching now',
-    'ON IT MAN',
-    'She\'s going as fast as she can, Captain!',
-    'Get ready for this',
-    'I hope you have enough RAM',
-    'Save a tree. Use 3G.'
-];
-function getConfirmationResponse() {
-    return CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)];
-}
-
-module.exports = controller => {
-    controller.on('direct_message', (b, m) => {
-        if (!/^budget /i.test(m.text) && m.text.indexOf(',') !== -1) {
-            b.reply(m, {
-                response_type: 'ephemeral',
-                text: `:mag_right: ${getConfirmationResponse()}`
-            });
-            search(m.text)
+module.exports = c => {
+    c.on('direct_message,direct_mention', (b, m) => {
+        if (is.abe(m.text)) {
+            const query = m.text.substr(4);
+            bookmancy.onSearch(b, m);
+            bookmancy.search(query)
                 .then(x => b.reply(m, x));
+        } else if(is.ebay(m.text)) {
+            bookmancy.onSearch(b, m);
+            const command = m.text.substr(5);
+            let promise, query;
+
+            if (is.live(command)) {
+                query = command.substr(5).trim();
+                promise = ebay.searchLiveListings(query);
+            } else {
+                query = command.replace(/sold/i, '').trim();
+                promise = ebay.searchSoldListings(query);
+            }
+            promise.then(r => b.reply(m, slackResponder(query, '', r, true)));
         }
     });
 };

@@ -1,30 +1,15 @@
 let moment = require('moment');
 let jsdom = require('jsdom');
+const getDom = require('../utils/getDom');
 
-module.exports = url => {
-    if (!url) {
-        url = 'https://gamesdonequick.com/schedule';
-    }
-    return new Promise((resolve, reject) => {
-        jsdom.env(url, (err, window) => {
-            if (!err) {
-                let results = parsePage(window);
-                console.log(`loaded up ${results.length} results`);
-                resolve(results);
-            } else {
-                console.log('nope', err);
-                reject(err);
-            }
-        });
-    });
-};
+module.exports = () => getDom('https://gamesdonequick.com/schedule')
+    .then(parsePage);
 
 function getLocalMoment(d) {
     return moment(d).utcOffset('-05:00');
 }
 
-function parsePage(window) {
-    const document = window.document;
+function parsePage(document) {
     let rows = document.querySelectorAll('#runTable tbody tr');
     let schedule = [];
 

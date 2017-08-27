@@ -5,13 +5,13 @@ if (!process.env.token) {
     process.exit(1);
 }
 
-let Botkit = require('botkit/lib/Botkit.js');
-let os = require('os');
-let controller = Botkit.slackbot({
+const Botkit = require('botkit/lib/Botkit.js');
+const os = require('os');
+const controller = Botkit.slackbot({
     debug: false,
 });
 
-let bot = controller.spawn({
+const bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
@@ -22,14 +22,14 @@ let bot = controller.spawn({
 (require('./paycheck/main'))(controller);
 (require('./fired/main'))(controller);
 
-controller.hears(['uptime',], 'direct_message,direct_mention,mention', function (b, m) {
+controller.hears(['uptime',], 'direct_message,direct_mention,mention', (b, m) => {
     b.reply(m, `:robot_face: I have been running for ${formatUptime(process.uptime())} on ${os.hostname()}.`);
 });
 
 controller.hears(['whoami'], 'direct_message', (b, m) => b.reply(m, {
-        response_type: 'ephemeral',
-        text: m.user
-    }));
+    response_type: 'ephemeral',
+    text: m.user
+}));
 
 function formatUptime(uptime) {
     let unit = 'second';
