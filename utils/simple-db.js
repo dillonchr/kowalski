@@ -23,9 +23,10 @@ class SimpleDb {
             .then(c => c.findOne({_id: id}));
     }
 
-    saveDocument(doc, upsert = true) {
+    saveDocument(searchPredicate, doc) {
+        searchPredicate = searchPredicate || {_id: doc._id};
         return this.getCollection()
-            .then(c => c.update({_id: doc._id}, doc, {upsert: !!upsert}));
+            .then(c => c.update(searchPredicate, doc));
     }
 
     saveMany(docs) {
