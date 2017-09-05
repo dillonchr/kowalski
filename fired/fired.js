@@ -69,7 +69,7 @@ class Fired extends SimpleDb {
     }
 
     markAsFired(e) {
-        return this.saveDocument({name: e.name}, e);
+        return this.saveDocument(e, {name: e.name});
     }
 
     update() {
