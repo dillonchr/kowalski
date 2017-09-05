@@ -5,29 +5,32 @@ const is = {
     update: s => /^update/i.test(s)
 };
 
-function reply(b, m, text) {
-    b.reply(m, {
-        response_type: 'ephemeral',
-        text: text
-    });
-}
-
 module.exports = (c) => {
     c.on('direct_message,direct_mention', (b, m) => {
         const message = m.text.trim();
         if (is.fired(message)) {
+            function reply(options) {
+                if (typeof text === 'string') {
+                    options = {
+                        response_type: 'ephemeral',
+                        text: options
+                    };
+                }
+                b.reply(m, options);
+            }
+
             const isUpdate = is.update(message.substr(6));
             const promise = fired[isUpdate ? 'update' : 'list']();
 
             if (isUpdate) {
-                reply(b, m, 'Updating and comparing rosters');
+                reply('Updating and comparing rosters');
             } else {
-                reply(b, m, 'Fetching current roster');
+                reply('Fetching current roster');
             }
 
             promise
-                .then(emps => b.reply(m, {
-                    text: isUpdate ? (emps.length ? 'We got some fresh meat' : 'No one new') : 'Here\'s who\'s been fired',
+                .then(emps => reply({
+                    text: isUpdate ? (emps && emps.length ? ' :smiling_imp: We got some fresh meat' : ':face_with_rolling_eyes: No one new') : ':fire: Here\'s who\'s been fired',
                     response_type: 'ephemeral',
                     attachments: emps
                         .sort((a, b) => b.fireDate - a.fireDate)

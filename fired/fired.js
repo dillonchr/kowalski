@@ -45,10 +45,10 @@ class Fired extends SimpleDb {
             //  employees that aren't found in the newly loaded roster
             const newFires = oldRoster
                 .filter(e => !e.fired && !nowRoster.some(n => e.name === n.name))
-                .map(e => Object.assign({
+                .map(e => Object.assign({}, e, {
                     fired: true,
                     fireDate: new Date().getTime()
-                }, e));
+                }));
             //  add people not in the old roster but in the current roster
             const newHires = nowRoster.filter(e => !oldRoster.some(o => e.name === o.name));
             const mergedRoster = oldRoster.concat(newHires);
@@ -61,15 +61,15 @@ class Fired extends SimpleDb {
             if (newFires.length) {
                 const wait = newFires
                     .map(emp => this.markAsFired(emp));
-                return Promise.all(wait)
-                    .then(() => console.log('UPDATED DB SUCCESSFULLY?'));
+                Promise.all(wait)
+                    .then(() => console.log('Db updated successfully!'));
             }
             return newFires;
         }
     }
 
     markAsFired(e) {
-        return this.saveDocument(Object.assign({_id: e.id}, e));
+        return this.saveDocument({name: e.name}, e);
     }
 
     update() {
