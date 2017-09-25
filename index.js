@@ -22,6 +22,7 @@ const bot = controller.spawn({
 (require('./paycheck/main'))(controller);
 (require('./fired/main'))(controller);
 (require('./inflation/main'))(controller);
+(require('./crypter/main'))(controller);
 
 controller.hears(['uptime',], 'direct_message,direct_mention,mention', (b, m) => {
     b.reply(m, `:robot_face: I have been running for ${formatUptime(process.uptime())} on ${os.hostname()}.`);
