@@ -23,14 +23,20 @@ class SimpleDb {
             .then(c => c.findOne({_id: id}));
     }
 
-    saveDocument(doc, upsert = true) {
+    saveDocument(doc, searchPredicate) {
+        searchPredicate = searchPredicate || {_id: doc._id};
         return this.getCollection()
-            .then(c => c.update({_id: doc._id}, doc, {upsert: !!upsert}));
+            .then(c => c.update(searchPredicate, doc));
+    }
+
+    saveMany(docs) {
+        return this.getCollection()
+            .then(c => c.insertMany(docs));
     }
 
     getAllDocuments() {
         return this.getCollection()
-            .then(c => c.find().toArray);
+            .then(c => c.find().toArray());
     }
 
     removeAllDocuments(template) {
