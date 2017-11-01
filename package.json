@@ -13,6 +13,7 @@
   "author": "dillonchr",
   "license": "MIT",
   "dependencies": {
+    "bookmancy": "0.0.x",
     "botkit": "^0.4.9",
     "dotenv": "^4.0.0",
     "express": "^4.14.0",

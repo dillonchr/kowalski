@@ -45,8 +45,8 @@ module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
 
                 return {
                     color: hiddenResultsColor,
-                    title: title,
-                    text: text,
+                    title,
+                    text,
                     fallback: r.price,
                     thumb_url: r.image,
                     title_link: r.url,

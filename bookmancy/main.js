@@ -1,6 +1,7 @@
-const bookmancy = require('./bookmancy');
+const bookmancy = require('bookmancy');
 const ebay = new (require('./ebay-searcher'))();
 const slackResponder = require('./slack-responder');
+const confirmMessage = require('./confirmation-messages');
 const is = {
     abe: s => /^abe /i.test(s),
     ebay: s => /^ebay /i.test(s),
@@ -11,23 +12,35 @@ const is = {
 module.exports = c => {
     c.on('direct_message,direct_mention', (b, m) => {
         if (is.abe(m.text)) {
-            const query = m.text.substr(4);
-            bookmancy.onSearch(b, m);
+            confirmMessage(b, m);
+            const messagePieces = m.text.substr(4).split(',').map(s => s.trim());
+            const [author, title, publisher, year, format] = messagePieces;
+            const query = {
+                author,
+                title,
+                publisher,
+                year: format && !isNaN(format) ? format : !isNaN(year) && year,
+                format: isNaN(year) ? year : format
+            };
             bookmancy.search(query)
-                .then(x => b.reply(m, x));
+                .then(({results, url}) => {
+                    const searchTitle = messagePieces.join(' - ');
+                    b.reply(m, slackResponder(searchTitle, url, results));
+                })
+                .catch(err => {
+                    console.error(err.message || err.toString(), err.stack);
+                    b.reply(m, {
+                        response_type: "ephemeral",
+                        text: "There was a problem processing your search. Try again soon."
+                    });
+                });
         } else if(is.ebay(m.text)) {
-            bookmancy.onSearch(b, m);
+            confirmMessage(b, m);
             const command = m.text.substr(5);
-            let promise, query;
-
-            if (is.live(command)) {
-                query = command.substr(5).trim();
-                promise = ebay.searchLiveListings(query);
-            } else {
-                query = command.replace(/sold/i, '').trim();
-                promise = ebay.searchSoldListings(query);
-            }
-            promise.then(r => b.reply(m, slackResponder(query, '', r, true)));
+            const isLive = is.live(command);
+            const query = command.replace(isLive ? /live/i : /sold/i, '').trim();
+            return ebay[`search${isLive ? 'Live' : 'Sold'}Listings`](query)
+                .then(r => b.reply(m, slackResponder(query, '', r, true)));
         }
     });
 };

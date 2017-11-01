@@ -1,5 +1,6 @@
 const request = require('request-promise-native');
-const API_KEY = 'DillonCh-4ce2-442c-b779-8d0905e2d5e4';
+//    idky but index has TOKEN lowercased and I don't feel like trialNErroring this
+const API_KEY = process.env.EBAY_API_KEY || process.env.ebay_api_key;
 const REGEX = {
     AUDIOBOOK: /audiobook|[^\w]cd[^\w]|cds/i,
     LEATHER: /[^\w]leather|deluxe/i,
