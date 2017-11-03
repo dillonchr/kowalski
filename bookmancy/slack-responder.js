@@ -28,7 +28,7 @@ module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
         mrkdown: true,
         attachments: [
             {
-                author_name: "Bookmancy Price Results",
+                author_name: 'Bookmancy Price Results',
                 color: hiddenResultsColor,
                 text: `There are ${hiddenResultsIdenifier} more results in the search above :point_up:`,
                 title: `See Search Results For: ${searchTitle}`,
@@ -38,7 +38,9 @@ module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
             }
         ]
             .concat(sharedResults.map(r => {
-                const title = [`$${r.price}`, r.shipping, r.year && '(' + r.year + ')']
+                const shipping = !!r.shipping && !isNaN(r.shipping) && `+ $${r.shipping}s/h`;
+                const year = r.year && `(${r.year})`;
+                const title = [`$${r.price}`, shipping, year]
                     .filter(s => !!s)
                     .join(' ');
                 const text = r.about.length > 120 ? r.about.substr(0, 120) + '...' : r.about;

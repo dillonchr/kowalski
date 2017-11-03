@@ -1,5 +1,4 @@
 const bookmancy = require('bookmancy');
-const ebay = new (require('./ebay-searcher'))();
 const slackResponder = require('./slack-responder');
 const confirmMessage = require('./confirmation-messages');
 const is = {
@@ -22,7 +21,7 @@ module.exports = c => {
                 year: format && !isNaN(format) ? format : !isNaN(year) && year,
                 format: isNaN(year) ? year : format
             };
-            bookmancy.search(query)
+            bookmancy.abe.searchWithUrlInResponse(query)
                 .then(({results, url}) => {
                     const searchTitle = messagePieces.join(' - ');
                     b.reply(m, slackResponder(searchTitle, url, results));
@@ -30,8 +29,8 @@ module.exports = c => {
                 .catch(err => {
                     console.error(err.message || err.toString(), err.stack);
                     b.reply(m, {
-                        response_type: "ephemeral",
-                        text: "There was a problem processing your search. Try again soon."
+                        response_type: 'ephemeral',
+                        text: 'There was a problem processing your search. Try again soon.'
                     });
                 });
         } else if(is.ebay(m.text)) {
@@ -39,7 +38,7 @@ module.exports = c => {
             const command = m.text.substr(5);
             const isLive = is.live(command);
             const query = command.replace(isLive ? /live/i : /sold/i, '').trim();
-            return ebay[`search${isLive ? 'Live' : 'Sold'}Listings`](query)
+            return bookmancy.ebay[`search${isLive ? 'Live' : 'Sold'}Listings`](query)
                 .then(r => b.reply(m, slackResponder(query, '', r, true)));
         }
     });
