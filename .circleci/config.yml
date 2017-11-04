@@ -1,3 +1,13 @@
-machine:
-  node:
-    version: 7.10.1
+version: 2
+jobs:
+  docker:
+    - image: circleci/node:7.10.1
+  build:
+    steps:
+      - checkout
+      - run:
+          name: install
+          command: npm i
+      - run:
+          name: test
+          command: jest
