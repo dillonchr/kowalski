@@ -31,31 +31,12 @@ describe('Paycheck', () => {
             });
     });
 
-    test('pay without number', () => {
-        expect.assertions(1);
-        component.pay('address')
-            .catch(err => {
-                expect(err).toBe('`address` isn\'t a proper amount.');
-            });
-    });
-
     test('pay with number', () => {
         expect.assertions(1);
         component.getTransactions = jest.fn(() => Promise.resolve({transactions:[]}));
         component.saveDocument = jest.fn(() => Promise.resolve());
         component.balance = jest.fn(() => {});
         component.pay('12.34')
-            .then(() => {
-                expect(component.saveDocument).toBeCalledWith({transactions:[12.34]});
-            });
-    });
-
-    test('pay with number as second param', () => {
-        expect.assertions(1);
-        component.getTransactions = jest.fn(() => Promise.resolve({transactions:[]}));
-        component.saveDocument = jest.fn(() => Promise.resolve());
-        component.balance = jest.fn(() => {});
-        component.pay('FAKE,12.34')
             .then(() => {
                 expect(component.saveDocument).toBeCalledWith({transactions:[12.34]});
             });

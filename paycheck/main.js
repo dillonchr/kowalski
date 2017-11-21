@@ -19,8 +19,8 @@ module.exports = controller => {
     //    TODO: don't hack this way
     (require('../budget/main'))(controller, paycheck);
 
-    controller.on('direct_mention,ambient', (b, m) => {
-        if (m.event !== 'ambient' || m.channel === 'G5JA6R84V') {
+    controller.on('direct_message,direct_mention,ambient', (b, m) => {
+        if (m.user === 'U3K93QTDM' || m.event !== 'ambient' || m.channel === 'G5JA6R84V') {
             const message = m.text.trim();
             if (is.module(message)) {
                 const action = message.substr(9);
