@@ -23,17 +23,6 @@ class Paycheck extends SimpleDb {
     }
 
     pay(price) {
-        if (isNaN(price)) {
-            const newPrice = price
-                .split(',')
-                .find(p => !isNaN(p));
-            if (!newPrice) {
-                console.error(price);
-                return Promise.reject(`\`${price}\` isn\'t a proper amount.`);
-            }
-            price = newPrice;
-        }
-
         return this.getTransactions()
             .then(doc => {
                 const cleanPrice = parseFloat(price);
@@ -64,9 +53,6 @@ class Paycheck extends SimpleDb {
     }
 
     reset(balance) {
-        if (!balance) {
-            balance = 2656.65;
-        }
         const resetDoc = this.getDefaultDocument(balance);
         return this.saveDocument(resetDoc)
             .then(() => {
