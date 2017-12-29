@@ -60,7 +60,7 @@ class Budget extends SimpleDb {
         return this.getTransactions(userId)
             .then(trans => {
                 trans.transactions.push({
-                    description: description,
+                    description,
                     price: parseFloat(price)
                 });
                 return this.saveDocument(trans)
