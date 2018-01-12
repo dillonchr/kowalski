@@ -1,19 +1,13 @@
 require('dotenv').config();
+const Botkit = require('botkit/lib/Botkit.js');
+const os = require('os');
 
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.exit(1);
 }
-
-const Botkit = require('botkit/lib/Botkit.js');
-const os = require('os');
-const controller = Botkit.slackbot({
-    debug: false,
-});
-
-const bot = controller.spawn({
-    token: process.env.token
-}).startRTM();
+const controller = Botkit.slackbot({debug: false});
+const bot = controller.spawn({token: process.env.token}).startRTM();
 
 (require('./gdq-schedule/main'))(controller);
 (require('./bookmancy/main'))(controller);
@@ -24,16 +18,8 @@ const bot = controller.spawn({
 (require('./inflation/main'))(controller);
 (require('./crypter/main'))(controller);
 
-controller.hears(['uptime',], 'direct_message,direct_mention,mention', (b, m) => {
-    b.reply(m, `:robot_face: I have been running for ${formatUptime(process.uptime())} on ${os.hostname()}.`);
-});
-
-controller.hears(['whoami'], 'direct_message', (b, m) => b.reply(m, {
-    response_type: 'ephemeral',
-    text: m.user
-}));
-
-function formatUptime(uptime) {
+controller.hears(['uptime'], 'direct_message,direct_mention,mention', (b, m) => {
+    let uptime = process.uptime();
     let unit = 'second';
     if (uptime > 60) {
         uptime = uptime / 60;
@@ -46,7 +32,7 @@ function formatUptime(uptime) {
     if (uptime != 1) {
         unit = unit + 's';
     }
+    b.reply(m, `:robot_face: I have been running for ${uptime} ${unit} on ${os.hostname()}.`);
+});
 
-    uptime = uptime + ' ' + unit;
-    return uptime;
-}
+controller.hears(['whoami'], 'direct_message', (b, m) => b.reply(m, {response_type: 'ephemeral', text: m.user}));
