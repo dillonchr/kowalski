@@ -18,6 +18,7 @@ const bot = controller.spawn({
 (require('./gdq-schedule/main'))(controller);
 (require('./bookmancy/main'))(controller);
 (require('./daily-text/main'))(controller);
+(require('./budget/main'))(controller);
 (require('./paycheck/main'))(controller);
 (require('./fired/main'))(controller);
 (require('./inflation/main'))(controller);

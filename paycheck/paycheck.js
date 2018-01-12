@@ -5,14 +5,13 @@ class Paycheck extends SimpleDb {
         const id = 'paycheck';
         super(id);
         this.id = id;
-        this.resetListeners = [];
     }
 
     //    do match on balance each time
     getDefaultDocument(balance = 2656.65) {
         return {
             _id: this.id,
-            balance: balance,
+            balance,
             transactions: []
         };
     }
@@ -34,32 +33,16 @@ class Paycheck extends SimpleDb {
 
     balance() {
         return this.getTransactions()
-            .then(doc => doc.transactions.reduce((sum, price) => sum - price, doc.balance * 0.9))
-            .then(bal => bal.toFixed(2));
-    }
-
-    addResetListener(callback) {
-        this.resetListeners.push(callback);
-    }
-
-    onReset(balance) {
-        this.resetListeners.forEach(cb => {
-            try {
-                cb(balance);
-            } catch (handlerError) {
-                console.error('Paycheck.onResetHandler error', handlerError);
-            }
-        });
+            .then(doc => doc.transactions
+                .reduce((sum, price) => sum - price, doc.balance - 200)
+                .toFixed(2)
+            );
     }
 
     reset(balance) {
-        const resetDoc = this.getDefaultDocument(balance);
-        return this.saveDocument(resetDoc)
-            .then(() => {
-                this.onReset(balance);
-                return this.balance();
-            });
+        return this.saveDocument(this.getDefaultDocument(balance))
+            .then(() => this.balance());
     }
 }
 
-module.exports = Paycheck;
+module.exports = new Paycheck();

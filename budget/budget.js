@@ -1,21 +1,17 @@
 const SimpleDb = require('../utils/simple-db');
+//  amount given to us each paycheck
+const BUDGET_BASE_BALANCE = 100;
 
 class Budget extends SimpleDb {
     constructor() {
         super('budget');
-        this.paycheckInstance = null;
     }
 
-    set paycheck(p) {
-        this.paycheckInstance = p;
-        this.paycheckInstance.addResetListener(this.onPaycheckReset.bind(this));
-    }
-
-    onPaycheckReset(newBalance) {
-        this.getAllDocuments()
+    onPaycheckReset() {
+        return this.getAllDocuments()
             .then(docs => {
                 return Promise.all(docs.map(doc => {
-                    const bal = this.getRemainingBalanceForUser(doc.transactions, newBalance);
+                    const bal = this.getRemainingBalanceForUser(doc.transactions);
                     doc.transactions = [];
                     if (bal > 0) {
                         doc.transactions.push({
@@ -45,9 +41,9 @@ class Budget extends SimpleDb {
             .then(bal => bal >= price);
     }
 
-    bought(userId, description, price) {
+    bought(userId, price, description) {
         if (isNaN(price)) {
-            if (!isNaN(description) && description > 0) {
+            if (!isNaN(description) && description === 0) {
                 const oldDescription = description;
                 description = price;
                 price = oldDescription;
@@ -68,25 +64,21 @@ class Budget extends SimpleDb {
             });
     }
 
-    getRemainingBalanceForUser(transactions, wagepacket) {
+    getRemainingBalanceForUser(transactions) {
         return transactions
-            .reduce((sum, t) => sum - t.price, wagepacket/20)
+            .reduce((sum, t) => sum - t.price, BUDGET_BASE_BALANCE)
             .toFixed(2);
     }
 
     balance(userId) {
-        return Promise.all([
-            this.paycheckInstance.getTransactions(),
-            this.getTransactions(userId)
-        ])
-            .then(([paycheck, user]) => {
-                const bal = this.getRemainingBalanceForUser(user.transactions, paycheck.balance);
+        return this.getTransactions(userId)
+            .then(user => {
                 return {
-                    bal: bal,
+                    bal: this.getRemainingBalanceForUser(user.transactions),
                     trans: user.transactions
                 };
         });
     }
 }
 
-module.exports = Budget;
+module.exports = new Budget();
