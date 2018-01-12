@@ -1,11 +1,6 @@
-const Paycheck = require('./paycheck');
-let component;
+const component = require('./paycheck');
 
 describe('Paycheck', () => {
-    beforeEach(() => {
-        component = new Paycheck();
-    });
-
     test('exists', () => {
         expect(component).toBeDefined();
         expect(component.id).toBe('paycheck');
@@ -31,6 +26,18 @@ describe('Paycheck', () => {
             });
     });
 
+    test('get balance', () => {
+        expect.assertions(1);
+        spyOn(component, 'getTransactions').and.returnValue(Promise.resolve({
+            balance: 100,
+            transactions: [0]
+        }));
+        component.balance()
+            .then(b => {
+                expect(b).toBe('-100.00');
+            });
+    });
+
     test('pay with number', () => {
         expect.assertions(1);
         component.getTransactions = jest.fn(() => Promise.resolve({transactions:[]}));
@@ -42,51 +49,16 @@ describe('Paycheck', () => {
             });
     });
 
-    test('get balance', () => {
-        expect.assertions(1);
-        spyOn(component, 'getTransactions').and.returnValue(Promise.resolve({
-            balance: 100,
-            transactions: [0]
-        }));
-        component.balance()
-            .then(b => {
-                expect(b).toBe('90.00');
-            });
-    });
-
-    test('add resetListener', () => {
-        const c = jest.fn();
-        component.addResetListener(c);
-        expect(component.resetListeners.pop()).toBe(c);
-    });
-
-    test('reset listeners fire after close', () => {
-        const c = jest.fn();
-        component.addResetListener(c);
-        expect(c).not.toBeCalled();
-        component.onReset();
-        expect(c).toBeCalled();
-    });
-
-    test('reset listeners gracefully fail', () => {
-        const c = jest.fn(() => { throw new Error('test'); });
-        component.addResetListener(c);
-        component.onReset();
-        expect(c).toBeCalled();
-    });
-
     test('reset', () => {
-        expect.assertions(3);
+        expect.assertions(2);
         component.saveDocument = jest.fn(doc => {
             expect(doc.balance).toBe(1234.56);
             return Promise.resolve({});
         });
-        component.onReset = jest.fn();
         component.balance = jest.fn(() => Promise.resolve());
         component.reset(1234.56)
             .then(response => {
                 expect(component.saveDocument).toBeCalled();
-                expect(component.onReset).toBeCalled();
-            })
+            });
     });
 });

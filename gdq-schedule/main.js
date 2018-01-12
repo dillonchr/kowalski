@@ -6,10 +6,10 @@ module.exports = (controller) => {
             .then(g => {
                 if (g && g.length) {
                     b.reply(m, {
-                        attachments: g.slice(0, 5).map(e => ({
-                            author_name: e.runners,
-                            title: e.title,
-                            text: `Starts at *${e.start.format('h:mm A')}* and has an estimate of _${e.estimate}_, so expected to end at *${e.ends.format('h:mm A')}*.`,
+                        attachments: g.slice(0, 5).map(({ runners, title, start, ends, estimate }) => ({
+                            author_name: runners,
+                            title,
+                            text: `Starts at *${start.format('h:mm A')}* and has an estimate of _${estimate}_, so expected to end at *${ends.format('h:mm A')}*.`,
                             footer: 'GDQ',
                             footer_icon: 'https://gamesdonequick.com/static/res/img/favicon/favicon.ico',
                             mrkdwn_in: ['text']

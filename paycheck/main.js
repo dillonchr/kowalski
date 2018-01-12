@@ -1,4 +1,4 @@
-const paycheck = new (require('./paycheck'))();
+const paycheck = require('./paycheck');
 
 function reply(b, m, text) {
     b.reply(m, {
@@ -8,9 +8,6 @@ function reply(b, m, text) {
 }
 
 module.exports = controller => {
-    //    TODO: don't hack this way
-    (require('../budget/main'))(controller, paycheck);
-
     controller.on('direct_message,direct_mention,ambient', (b, m) => {
         const isPaycheckChannel = m.channel === 'G5JA6R84V';
 
@@ -41,7 +38,7 @@ module.exports = controller => {
                     .catch(err => reply(b, m, err));
             } else if (/^reset /i.test(action)) {
                 paycheck.reset(action.substr(5).trim())
-                    .then(bal => reply(b, m, `Budget reset to $${bal} :+1:`));
+                    .then(bal => reply(b, m, `Paycheck balance reset to $${bal} :+1:`));
             }
         }
     });

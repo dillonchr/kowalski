@@ -21,6 +21,7 @@ module.exports = c => {
                 year: format && !isNaN(format) ? format : !isNaN(year) && year,
                 format: isNaN(year) ? year : format
             };
+            
             bookmancy.abe.searchWithUrlInResponse(query)
                 .then(({results, url}) => {
                     const searchTitle = messagePieces.join(' - ');
