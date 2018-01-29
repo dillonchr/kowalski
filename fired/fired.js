@@ -2,6 +2,7 @@ const getDom = require('../utils/getDom');
 const SimpleDb = require('../utils/simple-db');
 const ROSTER_URL = 'https://consumeraffairs.com/about/staff/';
 const COLL_NAME = 'employees';
+const Raven = require('raven');
 
 class Fired extends SimpleDb {
     constructor() {
@@ -24,7 +25,7 @@ class Fired extends SimpleDb {
                         fired: false
                     }));
                 if (!roster || !roster.length) {
-                    throw new Error('no employee data found on domQuery');
+                    Raven.captureException(new Error('FIRED: no employee data found on domQuery'));
                 }
                 return roster;
             });
@@ -39,7 +40,7 @@ class Fired extends SimpleDb {
         if (!oldRoster.length) {
             this.saveMany(nowRoster)
                 .then(() => console.log('No news. Saved current roster for future comparisons.'))
-                .catch(err => console.error(err));
+                .catch(err => Raven.captureException(err));
             return [];
         } else {
             //  employees that aren't found in the newly loaded roster
@@ -56,7 +57,7 @@ class Fired extends SimpleDb {
 
             if (newHires.length) {
                 this.saveMany(newHires)
-                    .catch(err => console.log('problem saving yo'));
+                    .catch(err => Raven.captureException(err));
             }
             if (newFires.length) {
                 const wait = newFires

@@ -1,9 +1,12 @@
 require('dotenv').config();
+const Raven = require('raven');
+Raven.config(process.env.SENTRY_URL).install();
 const Botkit = require('botkit/lib/Botkit.js');
 const os = require('os');
 
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
+    Raven.captureException(new Error('no token in environment'));
     process.exit(1);
 }
 const controller = Botkit.slackbot({debug: false});

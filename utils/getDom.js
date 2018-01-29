@@ -1,4 +1,5 @@
 const jsdom = require('jsdom');
+const Raven = require('raven');
 
 module.exports = url => {
     return new Promise((resolve, reject) => {
@@ -6,6 +7,7 @@ module.exports = url => {
             if (!err && !!w) {
                 resolve(w.document);
             } else {
+                Raven.captureException(err);
                 reject(err);
             }
         });
