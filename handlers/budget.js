@@ -22,8 +22,8 @@ module.exports = controller => {
             if (/^(budget )?balance/i.test(action)) {
                 respondWithBalance(b, m, userId);
             } else if (/^budget /i.test(action)) {
-                const [ price, description ] = action.substr(7).split(',');
-                budget.bought(userId, price, description, (err, data) => {
+                const [ amount, description ] = action.substr(7).split(',');
+                budget.bought(userId, {amount, description}, (err, data) => {
                     if (err) {
                         trackError(err);
                         return whisper(b, m, `Budget broke: ${err.message}`);
