@@ -1,25 +1,24 @@
 require('dotenv').config();
-const Raven = require('raven');
-Raven.config(process.env.SENTRY_URL).install();
 const Botkit = require('botkit/lib/Botkit.js');
 const os = require('os');
+const trackError = require('./utils/track-error');
 
 if (!process.env.token) {
-    console.log('Error: Specify token in environment');
-    Raven.captureException(new Error('no token in environment'));
+    trackError(new Error('no token in environment'));
     process.exit(1);
 }
+
 const controller = Botkit.slackbot({debug: false});
 const bot = controller.spawn({token: process.env.token}).startRTM();
 
-(require('./gdq-schedule/main'))(controller);
-(require('./bookmancy/main'))(controller);
-(require('./daily-text/main'))(controller);
-(require('./budget/main'))(controller);
-(require('./paycheck/main'))(controller);
-(require('./fired/main'))(controller);
-(require('./inflation/main'))(controller);
-(require('./crypter/main'))(controller);
+(require('./handlers/gdq'))(controller);
+(require('./handlers/bookmancy/index'))(controller);
+(require('./handlers/dailytext'))(controller);
+(require('./handlers/budget'))(controller);
+(require('./handlers/paycheck'))(controller);
+(require('./handlers/fired'))(controller);
+(require('./handlers/inflation'))(controller);
+(require('./handlers/cryptonics'))(controller);
 
 controller.hears(['uptime'], 'direct_message,direct_mention,mention', (b, m) => {
     let uptime = process.uptime();

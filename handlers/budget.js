@@ -1,10 +1,13 @@
 const { budget } = require('funhouse-client');
-
-const reply = (b, m, text) => b.reply(m, {response_type: 'ephemeral', text});
+const { trackError, whisper } = require('../utils/index');
 
 const respondWithBalance = (b, m, userId) => {
-    budget.balance(userId, (err, {balance}) =>  {
-        b.reply(m, `Your balance is *$${balance}*`);
+    budget.balance(userId, (err, data) =>  {
+        if (err) {
+            trackError(err);
+            return whisper(b, m, `budget error: ${err.message}`);
+        }
+        whisper(b, m, `Your budget is at *$${data.balance}*`);
     });
 };
 
@@ -20,8 +23,12 @@ module.exports = controller => {
                 respondWithBalance(b, m, userId);
             } else if (/^budget /i.test(action)) {
                 const [ price, description ] = action.substr(7).split(',');
-                budget.bought(userId, price, description, (err, {balance}) => {
-                    reply(b, m, err || `You have $${balance} left`);
+                budget.bought(userId, price, description, (err, data) => {
+                    if (err) {
+                        trackError(err);
+                        return whisper(b, m, `Budget broke: ${err.message}`);
+                    }
+                    whisper(b, m, `You now have $${data.balance} left`);
                 });
             }  else if (isInPaycheckChannel && /^reset /i.test(action)) {
                 // budget.onPaycheckReset()

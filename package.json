@@ -7,19 +7,15 @@
     "node": "7.10.1"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "jest --ci"
   },
   "author": "dillonchr",
   "license": "MIT",
   "dependencies": {
-    "bookmancy": "^1.0.3",
     "botkit": "^0.4.9",
     "dotenv": "^4.0.0",
     "funhouse-client": "github:dillonchr/funhouse-client",
-    "jsdom": "^9.9.1",
-    "momentjs": "^2.0.0",
-    "mongodb": "^2.2.34",
     "raven": "^2.4.0"
   },
   "devDependencies": {

@@ -1,17 +1,9 @@
-const paycheck = require('./paycheck');
-
-function reply(b, m, text) {
-    b.reply(m, {
-        response_type: 'ephemeral',
-        text
-    });
-}
+const { paycheck } = require('funhouse-client');
+const whisper = require('../utils/whisper');
 
 module.exports = controller => {
     controller.on('direct_message,direct_mention,ambient', (b, m) => {
-        const isPaycheckChannel = m.channel === 'G5JA6R84V';
-
-        if (m.user === 'U3K93QTDM' || isPaycheckChannel) {
+        if (m.user === 'U3K93QTDM' || m.channel === 'G5JA6R84V') {
             const action = m.text.trim();
             
             if (/^help$/i.test(action)) {
@@ -21,24 +13,29 @@ module.exports = controller => {
                     '`reset {paycheck total}`\nresets paycheck balance and budgets\n`paycheck total` is optional but can be used to reset beginning of paycheck balance to specific amount otherwise it will default to $2656.65'
                 ].join('\n\n'));
             } else if (/^balance/i.test(action)) {
-                paycheck.balance()
-                    .then(bal => reply(b, m, `You have $${bal}`));
+                paycheck.balance((err, bal) => {
+                    if (err) {
+                        whisper(b, m, `Probalo! ${err.message}`);
+                    } else {
+                        whisper(b, m, `You have $${bal.balance}`);
+                    }
+                });
             } else if (/^paycheck /i.test(action)) {
                 let price = action.substr(9);
                 if (isNaN(price)) {
                     const newPrice = price.split(',').find(p => !isNaN(p));
                     if (!newPrice) {
-                        return reply(b, m, `\`${price}\` isn\'t a proper amount.`);
+                        return whisper(b, m, `\`${price}\` isn\'t a proper amount.`);
                     }
                     price = +newPrice;
                 }
 
                 paycheck.pay(price)
-                    .then(res => reply(b, m, `You have $${res} left`))
-                    .catch(err => reply(b, m, err));
+                    .then(res => whisper(b, m, `You have $${res} left`))
+                    .catch(err => whisper(b, m, err));
             } else if (/^reset /i.test(action)) {
                 paycheck.reset(action.substr(5).trim())
-                    .then(bal => reply(b, m, `Paycheck balance reset to $${bal} :+1:`));
+                    .then(bal => whisper(b, m, `Paycheck balance reset to $${bal} :+1:`));
             }
         }
     });
