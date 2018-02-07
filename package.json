@@ -15,7 +15,7 @@
   "dependencies": {
     "botkit": "^0.4.9",
     "dotenv": "^4.0.0",
-    "funhouse-client": "github:dillonchr/funhouse-client",
+    "funhouse-client": "^1.0.0",
     "raven": "^2.4.0"
   },
   "devDependencies": {
