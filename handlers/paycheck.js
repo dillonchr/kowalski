@@ -1,5 +1,5 @@
 const { paycheck } = require('funhouse-client');
-const whisper = require('../utils/whisper');
+const { whisper, trackError } = require('../utils');
 
 module.exports = controller => {
     controller.on('direct_message,direct_mention,ambient', (b, m) => {
@@ -15,6 +15,7 @@ module.exports = controller => {
             } else if (/^balance/i.test(action)) {
                 paycheck.balance((err, bal) => {
                     if (err) {
+                        trackError(err);
                         whisper(b, m, `Probalo! ${err.message}`);
                     } else {
                         whisper(b, m, `You have $${bal.balance}`);
@@ -30,9 +31,13 @@ module.exports = controller => {
                     price = +newPrice;
                 }
 
-                paycheck.pay(price)
-                    .then(res => whisper(b, m, `You have $${res} left`))
-                    .catch(err => whisper(b, m, err));
+                paycheck.pay(price, (err, result) => {
+                    if (err) {
+                        trackError(err);
+                        return whisper(b, m, `Paycheck error: ${err.message}`);
+                    }
+                    whisper(b, m, `You now have $${result.balance}`);
+                });
             } else if (/^reset /i.test(action)) {
                 paycheck.reset(action.substr(5).trim())
                     .then(bal => whisper(b, m, `Paycheck balance reset to $${bal} :+1:`));
