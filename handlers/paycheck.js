@@ -35,12 +35,19 @@ module.exports = controller => {
                     if (err) {
                         trackError(err);
                         return whisper(b, m, `Paycheck error: ${err.message}`);
+                    } else {
+                        whisper(b, m, `You now have $${result.balance}`);
                     }
-                    whisper(b, m, `You now have $${result.balance}`);
                 });
             } else if (/^reset /i.test(action)) {
-                paycheck.reset(action.substr(5).trim())
-                    .then(bal => whisper(b, m, `Paycheck balance reset to $${bal} :+1:`));
+                paycheck.reset(action.substr(5).trim(), (err, result) => {
+                    if (err) {
+                        trackError(err);
+                        return whisper(b, m, `Paycheck error: ${err.message}`);
+                    } else {
+                        whisper(b, m, `Paycheck balance reset to $${result.balance} :+1:`);
+                    }
+                });
             }
         }
     });
