@@ -1,36 +1,36 @@
-const { budget } = require('funhouse-client');
-const { trackError, whisper } = require('../utils/index');
+const {budget} = require('funhouse-client');
+const {trackError} = require('../utils/index');
 
-const respondWithBalance = (b, m, userId) => {
-    budget.balance(userId, (err, data) =>  {
+const respondWithBalance = (reply, userId) => {
+    budget.balance(userId, (err, data) => {
         if (err) {
             trackError(err);
-            return whisper(b, m, `budget error: ${err.message}`);
+            return reply(`Budget error: ${err.message}`);
         }
-        whisper(b, m, `Your budget is at *$${data.balance}*`);
+        reply(`Your budget is at **$${data.balance}**`);
     });
 };
 
-module.exports = controller => {
-    controller.on('direct_message,direct_mention,ambient', (b, m) => {
-        const isInPaycheckChannel = m.channel === 'G5JA6R84V';
+module.exports = bot => {
+    bot.hears(['budget'], (reply, m) => {
+        const isInPaycheckChannel = m.channel_id === 'G5JA6R84V';
 
         if (m.event !== 'ambient' || isInPaycheckChannel) {
-            const action = m.text.trim();
-            const userId = m.user;
-            
+            const action = m.content.trim();
+            const userId = m.author.id;
+
             if (/^(budget )?balance/i.test(action)) {
-                respondWithBalance(b, m, userId);
+                respondWithBalance(reply, userId);
             } else if (/^budget /i.test(action)) {
-                const [ amount, description ] = action.substr(7).split(',');
+                const [amount, description] = action.substr(7).split(',');
                 budget.bought(userId, {amount, description}, (err, data) => {
                     if (err) {
                         trackError(err);
-                        return whisper(b, m, `Budget broke: ${err.message}`);
+                        return reply(`Budget broke: ${err.message}`);
                     }
-                    whisper(b, m, `You now have $${data.balance} left`);
+                    reply(`You now have $${data.balance} left`);
                 });
-            }  else if (isInPaycheckChannel && /^reset /i.test(action)) {
+            } else if (isInPaycheckChannel && /^reset /i.test(action)) {
                 // budget.onPaycheckReset()
                 //     .then(() => reply(b, m, `Budget reset... calculating balance`))
                 //     .then(() => respondWithBalance(b, m, userId));

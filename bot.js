@@ -20,6 +20,9 @@ const botHandler = () => {
     return {
         hears: (triggers, callback) => {
             handlers.push([triggers.map(s => s.toLowerCase()), callback]);
+        },
+        get id() {
+            return bot.id;
         }
     }
 };
