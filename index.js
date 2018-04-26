@@ -1,5 +1,4 @@
 require('dotenv').config();
-const Botkit = require('botkit/lib/Botkit.js');
 const os = require('os');
 const trackError = require('./utils/track-error');
 
@@ -8,19 +7,19 @@ if (!process.env.token) {
     process.exit(1);
 }
 
-const controller = Botkit.slackbot({debug: false});
-const bot = controller.spawn({token: process.env.token}).startRTM();
+const bot = require('./bot');
 
-(require('./handlers/gdq'))(controller);
-(require('./handlers/bookmancy/index'))(controller);
-(require('./handlers/dailytext'))(controller);
-(require('./handlers/budget'))(controller);
-(require('./handlers/paycheck'))(controller);
-(require('./handlers/fired'))(controller);
-(require('./handlers/inflation'))(controller);
-(require('./handlers/cryptonics'))(controller);
+// (require('./handlers/gdq'))(bot);
+// (require('./handlers/bookmancy/index'))(bot);
+// (require('./handlers/dailytext'))(bot);
+// (require('./handlers/budget'))(bot);
+// (require('./handlers/paycheck'))(bot);
+// (require('./handlers/fired'))(bot);
+// (require('./handlers/inflation'))(bot);
+// (require('./handlers/cryptonics'))(bot);
 
-controller.hears(['uptime'], 'direct_message,direct_mention,mention', (b, m) => {
+
+bot.hears(['uptime'], reply => {
     let uptime = process.uptime();
     let unit = 'second';
     if (uptime > 60) {
@@ -34,7 +33,7 @@ controller.hears(['uptime'], 'direct_message,direct_mention,mention', (b, m) => 
     if (uptime != 1) {
         unit = unit + 's';
     }
-    b.reply(m, `:robot_face: I have been running for ${uptime} ${unit} on ${os.hostname()}.`);
+    reply(`:robot_face: I have been running for ${uptime} ${unit} on ${os.hostname()}.`);
 });
 
-controller.hears(['whoami'], 'direct_message', (b, m) => b.reply(m, {response_type: 'ephemeral', text: m.user}));
+bot.hears(['whoami'], (reply, m) => reply(`${m.author.username} \`${m.author.id}\``));
