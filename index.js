@@ -15,7 +15,7 @@ const bot = require('./bot');
 // (require('./handlers/budget'))(bot);
 // (require('./handlers/paycheck'))(bot);
 (require('./handlers/fired'))(bot);
-// (require('./handlers/inflation'))(bot);
+(require('./handlers/inflation'))(bot);
 // (require('./handlers/cryptonics'))(bot);
 
 
