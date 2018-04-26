@@ -1,5 +1,5 @@
-const { bookmancy } = require('funhouse-client');
-const { trackError, whisper } = require('../../utils');
+const {bookmancy} = require('funhouse-client');
+const {trackError, whisper} = require('../../utils');
 const slackResponder = require('./slack-responder');
 const confirmMessage = require('./confirmation-messages');
 const is = {
@@ -25,15 +25,15 @@ module.exports = c => {
                 withUrl: true
             };
             bookmancy(query, (err, results) => {
-                 if (err) {
-                     trackError(err);
-                     return whisper(b, m, `Search error: ${err.message}`);
-                 }
+                if (err) {
+                    trackError(err);
+                    return whisper(b, m, `Search error: ${err.message}`);
+                }
 
                 const searchTitle = messagePieces.join(' - ');
                 b.reply(m, slackResponder(searchTitle, results.url, results.results));
             });
-        } else if(is.ebay(m.text)) {
+        } else if (is.ebay(m.text)) {
             confirmMessage(b, m);
             const isLive = /^live /i.test(m.text.substr(5));
             const query = m.text.substr(5).replace(/live|sold/i, '').trim();
