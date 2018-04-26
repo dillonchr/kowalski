@@ -1,6 +1,6 @@
 const {bookmancy} = require('funhouse-client');
 const {trackError} = require('../../utils');
-const funhouseResponseTransformer = require('./slack-responder');
+const funhouseResponseTransformer = require('./funhouse-response-transformer');
 const confirmMessage = require('./confirmation-messages');
 const is = {
     abe: s => /^abe /i.test(s),

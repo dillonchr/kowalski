@@ -1,4 +1,4 @@
-module.exports = slacker = (searchTitle, searchUrl, x, isEbay = false) => {
+module.exports = (searchTitle, searchUrl, x, isEbay = false) => {
     const MAX_RESULTS = 50;
     const RESULTS_LIMIT = 7;
     /**
