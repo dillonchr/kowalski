@@ -6,7 +6,6 @@ module.exports = bot => {
     bot.hears(['gdq', ':video_game:'], reply => {
         gdq((err, g) => {
             if (g && g.length) {
-                console.log(JSON.stringify(g[0]));
                 const response = g.slice(0, 5)
                     .map(
                         ({runners, title, start, ends, estimate}) => [
