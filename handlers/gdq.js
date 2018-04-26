@@ -1,25 +1,30 @@
-const { gdq } = require('funhouse-client');
-const { trackError } = require('../utils');
+const {gdq} = require('funhouse-client');
+const {trackError} = require('../utils');
+const moment = require('moment');
 
-module.exports = (controller) => {
-    controller.hears(['gdq', ':video_game:'], 'direct_message,direct_mention,mention', (b, m) => {
+module.exports = bot => {
+    bot.hears(['gdq', ':video_game:'], reply => {
         gdq((err, g) => {
             if (g && g.length) {
-                b.reply(m, {
-                    attachments: g.slice(0, 5).map(({ runners, title, start, ends, estimate }) => ({
-                        author_name: runners,
-                        title,
-                        text: `Starts at *${start.format('h:mm A')}* and has an estimate of _${estimate}_, so expected to end at *${ends.format('h:mm A')}*.`,
-                        footer: 'GDQ',
-                        footer_icon: 'https://gamesdonequick.com/static/res/img/favicon/favicon.ico',
-                        mrkdwn_in: ['text']
-                    }))
-                });
+                console.log(JSON.stringify(g[0]));
+                const response = g.slice(0, 5)
+                    .map(
+                        ({runners, title, start, ends, estimate}) => [
+                            `**${title}**`,
+                            `Starts: **${moment(start).format('h:mm A')}**`,
+                            `Estimate: _${estimate}_`,
+                            `Ends: **${moment(ends).format('h:mm A')}**`,
+                            `${runners}`,
+                            ''
+                        ].join('\n')
+                    )
+                    .join('\n');
+                reply(response);
             } else {
                 if (err) {
                     trackError(err);
                 }
-                b.reply(m, 'Sorry, I got nothin\'.');
+                reply('Sorry, I got nothin\'.');
             }
         });
     });
