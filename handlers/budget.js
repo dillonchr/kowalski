@@ -15,7 +15,6 @@ module.exports = bot => {
     bot.hearsAnythingInChannel('439164695149019156', (reply, m) => {
         const action = m.content.trim();
         const userId = m.author.id;
-        console.log('am i zombie');
 
         if (/^(budget )?balance/i.test(action)) {
             respondWithBalance(reply, userId);

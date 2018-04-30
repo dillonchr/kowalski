@@ -12,7 +12,7 @@ const bot = require('./bot');
 (require('./handlers/gdq'))(bot);
 (require('./handlers/bookmancy/index'))(bot);
 (require('./handlers/dailytext'))(bot);
-//(require('./handlers/budget'))(bot);
+(require('./handlers/budget'))(bot);
 (require('./handlers/paycheck'))(bot);
 (require('./handlers/fired'))(bot);
 (require('./handlers/inflation'))(bot);

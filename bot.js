@@ -9,10 +9,9 @@ const botHandler = () => {
     bot.on('message', (user, userId, channelId, msg, e) => {
         if (userId !== bot.id) {
             try {
-                const channelHandler = channelHandlers.find(([id]) => channelId === id);
-                if (channelHandler) {
-                    console.log('gotcha', channelId, channelHandler);
-                    channelHandler[1](reply => bot.sendMessage({to: channelId, message: reply}), e.d);
+                const matchedChannelHandlers = channelHandlers.filter(([id]) => channelId === id);
+                if (matchedChannelHandlers.length) {
+                    matchedChannelHandlers.forEach(([id, callback]) => callback(reply => bot.sendMessage({to: channelId, message: reply}), e.d));
                 } else {
                     const lowerCasedMsg = msg.toLowerCase();
                     const [ignore, fn] = handlers.find(([triggers]) => {
