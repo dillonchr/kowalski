@@ -1,54 +1,57 @@
-const { paycheck } = require('funhouse-client');
-const { whisper, trackError } = require('../utils');
+const {paycheck} = require('funhouse-client');
+const {trackError} = require('../utils');
+const regExs = {
+    balance: /^balance/i,
+    help: /^help$/i,
+    debit: /([\d.-]+),(.*)$/,
+    budget: /^budget /i
+};
 
-module.exports = controller => {
-    controller.on('direct_message,direct_mention,ambient', (b, m) => {
-        if (m.user === 'U3K93QTDM' || m.channel === 'G5JA6R84V') {
-            const action = m.text.trim();
-            
-            if (/^help$/i.test(action)) {
-                b.reply(m, [
-                    '`balance`\ngets remaining balance',
-                    '`paycheck {amount}, {optional description}`\nadd transaction with just a dollar amount',
-                    '`reset {paycheck total}`\nresets paycheck balance and budgets\n`paycheck total` is optional but can be used to reset beginning of paycheck balance to specific amount otherwise it will default to $2656.65'
-                ].join('\n\n'));
-            } else if (/^balance/i.test(action)) {
-                paycheck.balance((err, bal) => {
-                    if (err) {
-                        trackError(err);
-                        whisper(b, m, `Probalo! ${err.message}`);
-                    } else {
-                        whisper(b, m, `You have $${bal.balance}`);
-                    }
-                });
-            } else if (/^paycheck /i.test(action)) {
-                let price = action.substr(9);
+module.exports = bot => {
+    bot.hearsAnythingInChannel('439164695149019156', (reply, m) => {
+        const action = m.content.trim();
+
+        if (regExs.help.test(action)) {
+            reply([
+                '`balance`\ngets remaining balance',
+                '`paycheck {amount}, {optional description}`\nadd transaction with just a dollar amount',
+                '`reset {paycheck total}`\nresets paycheck balance and budgets\n`paycheck total` is optional but can be used to reset beginning of paycheck balance to specific amount otherwise it will default to $2656.65'
+            ].join('\n\n'));
+        } else if (regExs.balance.test(action)) {
+            paycheck.balance((err, bal) => {
+                if (err) {
+                    trackError(err);
+                    reply(`Probalo! ${err.message}`);
+                } else {
+                    reply(`You have $${bal.balance}`);
+                }
+            });
+        } else if (regExs.debit.test(action) && !regExs.budget.test(action)) {
+            try {
+                const [ignore, price] = action.match(regExs.debit);
+
                 if (isNaN(price)) {
-                    const newPrice = price.split(',').find(p => !isNaN(p));
-                    if (!newPrice) {
-                        return whisper(b, m, `\`${price}\` isn\'t a proper amount.`);
-                    }
-                    price = +newPrice;
+                    return reply(`\`${price}\` isn\'t a proper amount.`);
                 }
 
                 paycheck.pay(price, (err, result) => {
                     if (err) {
                         trackError(err);
-                        return whisper(b, m, `Paycheck error: ${err.message}`);
+                        return reply(`Paycheck error: ${err.message}`);
                     } else {
-                        whisper(b, m, `You now have $${result.balance}`);
+                        reply(`You now have $${result.balance}`);
                     }
                 });
-            } else if (/^reset /i.test(action)) {
-                paycheck.reset(action.substr(5).trim(), (err, result) => {
-                    if (err) {
-                        trackError(err);
-                        return whisper(b, m, `Paycheck error: ${err.message}`);
-                    } else {
-                        whisper(b, m, `Paycheck balance reset to $${result.balance} :+1:`);
-                    }
-                });
-            }
+            } catch (err) {}
+        } else if (/^reset /i.test(action)) {
+            paycheck.reset(action.substr(5).trim(), (err, result) => {
+                if (err) {
+                    trackError(err);
+                    return reply(`Paycheck error: ${err.message}`);
+                } else {
+                    reply(`Paycheck balance reset to $${result.balance} :+1:`);
+                }
+            });
         }
     });
 };
