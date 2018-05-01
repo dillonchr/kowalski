@@ -42,7 +42,10 @@ module.exports = bot => {
                         reply(`You now have $${result.balance}`);
                     }
                 });
-            } catch (err) {}
+            } catch (err) {
+                trackError(err);
+                reply(`Paycheck debit error: ${err.message}`);
+            }
         } else if (/^reset /i.test(action)) {
             paycheck.reset(action.substr(5).trim(), (err, result) => {
                 if (err) {
