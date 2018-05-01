@@ -27,11 +27,11 @@ module.exports = bot => {
                 }
                 reply(`You now have $${data.balance} left`);
             });
-        } else if (isInPaycheckChannel && /^reset /i.test(action)) {
+        } /*else if (isInPaycheckChannel && /^reset /i.test(action)) {
             // budget.onPaycheckReset()
             //     .then(() => reply(b, m, `Budget reset... calculating balance`))
             //     .then(() => respondWithBalance(b, m, userId));
-        }
+        }*/
 
     });
 };
