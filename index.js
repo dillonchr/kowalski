@@ -17,6 +17,7 @@ const bot = require('./bot');
 (require('./handlers/fired'))(bot);
 (require('./handlers/inflation'))(bot);
 (require('./handlers/cryptonics'))(bot);
+(require('./handlers/wfh'))(bot);
 
 
 bot.hears(['uptime'], reply => {
