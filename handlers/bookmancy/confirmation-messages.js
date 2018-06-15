@@ -14,9 +14,4 @@ const CONF_RESPONSES = [
     'I\'m not even working on this one.'
 ];
 
-module.exports = (b, m) => {
-    b.reply(m, {
-        response_type: 'ephemeral',
-        text: `:mag_right: ${CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)]}`
-    });
-}
+module.exports = reply => reply(`:mag_right: ${CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)]}`);
