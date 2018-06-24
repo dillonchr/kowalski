@@ -6,7 +6,8 @@ module.exports = bot => {
     bot.hears(['gdq', ':video_game:'], reply => {
         gdq((err, g) => {
             if (g && g.length) {
-                const response = g.slice(0, 5)
+                const response = g.filter(g => !g.done)
+                    .slice(0, 5)
                     .map(
                         ({runners, title, start, ends, estimate}) => [
                             `**${title}**`,
