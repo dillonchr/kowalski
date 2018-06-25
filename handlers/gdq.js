@@ -2,6 +2,10 @@ const {gdq} = require('funhouse-client');
 const {trackError} = require('../utils');
 const moment = require('moment');
 
+const timestampToDisplayTime = (timestamp) => {
+    return moment(timestamp).utcOffset('-05:00').format('h:mm A');
+};
+
 module.exports = bot => {
     bot.hears(['gdq', ':video_game:'], reply => {
         gdq((err, g) => {
@@ -11,9 +15,9 @@ module.exports = bot => {
                     .map(
                         ({runners, title, start, ends, estimate}) => [
                             `**${title}**`,
-                            `Starts: **${moment(start).format('h:mm A')}**`,
+                            `Starts: **${timestampToDisplayTime(start)}**`,
                             `Estimate: _${estimate}_`,
-                            `Ends: **${moment(ends).format('h:mm A')}**`,
+                            `Ends: **${timestampToDisplayTime(ends)}**`,
                             `${runners}`,
                             ''
                         ].join('\n')
