@@ -2,12 +2,12 @@ require('dotenv').config();
 const os = require('os');
 const trackError = require('./utils/track-error');
 
-if (!process.env.token) {
+if (!process.env.DISCORD_TOKEN) {
     trackError(new Error('no token in environment'));
     process.exit(1);
 }
 
-const bot = require('./bot');
+const bot = require('@dillonchr/discordbot');
 
 (require('./handlers/gdq'))(bot);
 (require('./handlers/bookmancy/index'))(bot);
@@ -18,7 +18,6 @@ const bot = require('./bot');
 (require('./handlers/inflation'))(bot);
 (require('./handlers/cryptonics'))(bot);
 (require('./handlers/wfh'))(bot);
-
 
 bot.hears(['uptime'], reply => {
     let uptime = process.uptime();

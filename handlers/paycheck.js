@@ -1,23 +1,18 @@
-const {paycheck} = require('funhouse-client');
+const {paycheck} = require('@dillonchr/funhouse');
 const {trackError} = require('../utils');
-const regExs = {
-    balance: /^balance/i,
-    help: /^help$/i,
-    debit: /([\d.-]+),(.*)$/,
-    budget: /^budget /i
+const is = {
+    balance: s => /^balance/i.test(s),
+    help: s => /^help$/i.test(s),
+    debit: s => /([\d.-]+),(.*)$/.test(s),
+    budget: s => /^budget /i.test(s),
+    reset: s => /^reset /i.test(s)
 };
 
 module.exports = bot => {
-    bot.hearsAnythingInChannel('439164695149019156', (reply, m) => {
+    bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, (reply, m) => {
         const action = m.content.trim();
 
-        if (regExs.help.test(action)) {
-            reply([
-                '`balance`\ngets remaining balance',
-                '`paycheck {amount}, {optional description}`\nadd transaction with just a dollar amount',
-                '`reset {paycheck total}`\nresets paycheck balance and budgets\n`paycheck total` is optional but can be used to reset beginning of paycheck balance to specific amount otherwise it will default to $2656.65'
-            ].join('\n\n'));
-        } else if (regExs.balance.test(action)) {
+        if (is.balance(action)) {
             paycheck.balance((err, bal) => {
                 if (err) {
                     trackError(err);
@@ -26,9 +21,9 @@ module.exports = bot => {
                     reply(`You have $${bal.balance}`);
                 }
             });
-        } else if (regExs.debit.test(action) && !regExs.budget.test(action)) {
+        } else if (is.debit(action) && !is.budget(action)) {
             try {
-                const [ignore, price] = action.match(regExs.debit);
+                const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
 
                 if (isNaN(price)) {
                     return reply(`\`${price}\` isn\'t a proper amount.`);
@@ -46,7 +41,7 @@ module.exports = bot => {
                 trackError(err);
                 reply(`Paycheck debit error: ${err.message}`);
             }
-        } else if (/^reset /i.test(action)) {
+        } else if (is.reset(action)) {
             paycheck.reset(action.substr(5).trim(), (err, result) => {
                 if (err) {
                     trackError(err);

@@ -1,4 +1,4 @@
-const {dailytext} = require('funhouse-client');
+const {dailytext} = require('@dillonchr/funhouse');
 const {trackError} = require('../utils/index');
 
 

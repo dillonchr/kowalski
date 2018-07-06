@@ -1,4 +1,4 @@
-const {wfh} = require('funhouse-client');
+const {wfh} = require('@dillonchr/funhouse');
 const {trackError} = require('../utils');
 
 module.exports = bot => {
@@ -7,7 +7,7 @@ module.exports = bot => {
         wfh((err, info) => {
             if (err) {
                 trackError(err);
-                reply('Whoops! ' + err.message);
+                reply(`Whoops! ${err.message}`);
             } else {
                 if (info.wfh) {
                     reply(info.who.reduce((str, who) => `${str}\n${who}`, 'People working from :house: today:'));

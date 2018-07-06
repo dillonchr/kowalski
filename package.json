@@ -1,25 +1,22 @@
 {
   "name": "kowalski",
   "version": "1.0.0",
-  "description": "A slack bot for fun",
+  "description": "A discord bot that grew up in slackville",
   "main": "index.js",
   "engines": {
     "node": "7.10.1"
   },
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "test": "jest --ci"
   },
   "author": "dillonchr",
-  "license": "MIT",
+  "license": "GPL-2.0",
   "dependencies": {
-    "discord.io": "github:woor/discord.io#gateway_v6",
+    "@dillonchr/discordbot": "^1.0.0",
+    "@dillonchr/funhouse": "^1.0.1",
     "dotenv": "^4.0.0",
-    "funhouse-client": "^1.0.0",
-    "moment": "^2.22.1",
-    "raven": "^2.4.0"
-  },
-  "devDependencies": {
-    "jest": "^20.0.4"
+    "moment": "^2.22.2",
+    "raven": "^2.6.3"
   }
 }

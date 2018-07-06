@@ -1,4 +1,4 @@
-const {cryptonics} = require('funhouse-client');
+const {cryptonics} = require('@dillonchr/funhouse');
 const {trackError} = require('../utils');
 const is = {
     encrypt: s => /^encrypt \d+;/i.test(s),
