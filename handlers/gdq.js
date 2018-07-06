@@ -6,7 +6,6 @@ module.exports = bot => {
     bot.hears(['gdq', ':video_game:'], reply => {
         gdq((err, g) => {
             if (g && g.length) {
-                console.log('got a response');
                 const response = g
                     .filter(g => !g.done)
                     .slice(0, 5)
