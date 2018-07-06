@@ -1,4 +1,4 @@
-const {budget} = require('funhouse-client');
+const {budget} = require('@dillonchr/funhouse');
 const {trackError} = require('../utils/index');
 
 const respondWithBalance = (reply, userId) => {
@@ -12,7 +12,7 @@ const respondWithBalance = (reply, userId) => {
 };
 
 module.exports = bot => {
-    bot.hearsAnythingInChannel('439164695149019156', (reply, m) => {
+    bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, (reply, m) => {
         const action = m.content.trim();
         const userId = m.author.id;
 
@@ -27,12 +27,7 @@ module.exports = bot => {
                 }
                 reply(`You now have $${data.balance} left`);
             });
-        } /*else if (isInPaycheckChannel && /^reset /i.test(action)) {
-            // budget.onPaycheckReset()
-            //     .then(() => reply(b, m, `Budget reset... calculating balance`))
-            //     .then(() => respondWithBalance(b, m, userId));
-        }*/
-
+        }
     });
 };
 

@@ -14,4 +14,6 @@ const CONF_RESPONSES = [
     'I\'m not even working on this one.'
 ];
 
-module.exports = reply => reply(`:mag_right: ${CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)]}`);
+module.exports = () => {
+    return `:mag_right: ${CONF_RESPONSES[Math.floor(Math.random() * CONF_RESPONSES.length)]}`;
+};

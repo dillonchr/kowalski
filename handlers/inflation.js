@@ -1,4 +1,4 @@
-const {inflation} = require('funhouse-client');
+const {inflation} = require('@dillonchr/funhouse');
 
 module.exports = bot => {
     bot.hears(['how much was '], (reply, {content}) => {

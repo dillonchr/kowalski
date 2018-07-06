@@ -1,4 +1,4 @@
-const {bookmancy} = require('funhouse-client');
+const {bookmancy} = require('@dillonchr/funhouse');
 const {trackError} = require('../../utils');
 const funhouseResponseTransformer = require('./funhouse-response-transformer');
 const confirmMessage = require('./confirmation-messages');
@@ -12,7 +12,7 @@ const is = {
 module.exports = bot => {
     bot.hears(['ebay', 'abe'], (reply, m) => {
         if (is.abe(m.content)) {
-            confirmMessage(reply);
+            reply(confirmMessage());
             const messagePieces = m.content.substr(4).split(',').map(s => s.trim());
             const [author, title, publisher, year, format] = messagePieces;
             const query = {
@@ -22,27 +22,39 @@ module.exports = bot => {
                 year: format && !isNaN(format) ? format : !isNaN(year) && year,
                 format: isNaN(year) ? year : format,
                 source: 'abe',
-                withUrl: true
+                includeUrl: true
             };
-            bookmancy(query, (err, results) => {
+            bookmancy(query, (err, response) => {
                 if (err) {
                     trackError(err);
                     return reply(`Search error: ${err.message}`);
                 }
 
                 const searchTitle = messagePieces.join(' - ');
-                reply(funhouseResponseTransformer(searchTitle, results.url, results.results));
+                reply(funhouseResponseTransformer(searchTitle, response.url, response.results));
             });
         } else if (is.ebay(m.content)) {
-            confirmMessage(reply);
-            const isLive = /^live /i.test(m.content.substr(5));
-            const query = m.content.substr(5).replace(/live|sold/i, '').trim();
-            bookmancy({source: 'ebay', query, live: isLive, sold: !isLive}, (err, results) => {
+            reply(confirmMessage());
+            const searchSansEbay = m.content.substr(5);
+            const isLive = is.live(searchSansEbay);
+            const isSold = is.sold(searchSansEbay);
+            const searchTitle = searchSansEbay.replace(/^live|sold/i, '').trim();
+            const query = {
+                author: searchTitle,
+                source: 'ebay'
+            };
+            if (isLive) {
+                query.live = true;
+            }
+            if (isSold) {
+                query.sold = true;
+            }
+            bookmancy(query, (err, response) => {
                 if (err) {
                     trackError(err);
                     return reply(`Search error: ${err.message}`);
                 }
-                reply(funhouseResponseTransformer(query, '', results, true));
+                reply(funhouseResponseTransformer(searchTitle, '', response.results, true));
             });
         }
     });

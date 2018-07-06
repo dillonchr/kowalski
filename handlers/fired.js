@@ -1,4 +1,4 @@
-const {fired} = require('funhouse-client');
+const {fired} = require('@dillonchr/funhouse');
 const moment = require('moment');
 const {trackError} = require('../utils');
 const is = {
