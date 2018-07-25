@@ -6,3 +6,4 @@ services:
       - .env
     build: .
     restart: on-failure
+    network_mode: "host"
