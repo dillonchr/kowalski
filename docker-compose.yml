@@ -1,9 +1,14 @@
 version: '2'
 
+networks:
+  funhouse:
+    driver: bridge
+
 services:
   kowalski:
     env_file:
       - .env
     build: .
     restart: on-failure
-    network_mode: "host"
+    networks:
+      - funhouse
