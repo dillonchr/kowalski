@@ -1,8 +1,8 @@
 version: '2'
 
 networks:
-  funhouse:
-    driver: bridge
+  funhouse_funhouse:
+    external: true
 
 services:
   kowalski:
@@ -11,4 +11,4 @@ services:
     build: .
     restart: on-failure
     networks:
-      - funhouse
+      - funhouse_funhouse
