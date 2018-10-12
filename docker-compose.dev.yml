@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  kowalski:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: on-failure
+    volumes:
+      - /Users/dillon/git/DATAS:/data
+      - .:/code/
+      - /code/node_modules/

@@ -10,5 +10,7 @@ services:
       - .env
     build: .
     restart: on-failure
+    volumes:
+      - /mnt/wisconsin/europe:/data
     networks:
       - funhouse_funhouse
