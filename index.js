@@ -30,6 +30,14 @@ bot.hears(['uptime'], reply => {
         uptime = uptime / 60;
         unit = 'hour';
     }
+    if (uptime > 24) {
+        uptime = uptime / 24;
+        unit = 'day';
+    }
+    if (uptime > 30) {
+        uptime = uptime / 30;
+        unit = 'month';
+    }
     if (uptime != 1) {
         unit = unit + 's';
     }
