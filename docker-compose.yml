@@ -9,6 +9,6 @@ services:
     env_file:
       - .env
     build: .
-    restart: unless-stopped
+    restart: always
     networks:
       - funhouse_funhouse
