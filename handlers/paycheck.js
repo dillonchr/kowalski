@@ -34,7 +34,7 @@ module.exports = bot => {
                         trackError(err);
                         return reply(`Paycheck error: ${err.message}`);
                     } else {
-                        reply(`You now have $${result.balance}`);
+                        reply(`Paycheck balance: $${result.balance}`);
                     }
                 });
             } catch (err) {

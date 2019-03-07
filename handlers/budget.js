@@ -25,7 +25,7 @@ module.exports = bot => {
                     trackError(err);
                     return reply(`Budget broke: ${err.message}`);
                 }
-                reply(`You now have $${data.balance} left`);
+                reply(`@${m.author.username} budget balance: $${data.balance}`);
             });
         }
     });
