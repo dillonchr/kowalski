@@ -14,7 +14,6 @@ const bot = require('@dillonchr/discordbot');
 (require('./handlers/dailytext'))(bot);
 (require('./handlers/budget'))(bot);
 (require('./handlers/paycheck'))(bot);
-(require('./handlers/fired'))(bot);
 (require('./handlers/inflation'))(bot);
 (require('./handlers/cryptonics'))(bot);
 (require('./handlers/wfh'))(bot);
