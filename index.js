@@ -16,6 +16,7 @@ const bot = require('@dillonchr/discordbot');
 (require('./handlers/paycheck'))(bot);
 (require('./handlers/inflation'))(bot);
 (require('./handlers/cryptonics'))(bot);
+(require('./handlers/reminders'))(bot);
 
 bot.hears(['uptime'], reply => {
     let uptime = process.uptime();
@@ -43,3 +44,4 @@ bot.hears(['uptime'], reply => {
 });
 
 bot.hears(['whoami'], (reply, m) => reply(`${m.author.username} \`${m.author.id}\``));
+
