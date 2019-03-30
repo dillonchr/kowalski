@@ -29,7 +29,7 @@ module.exports = bot => {
                     return reply(`\`${price}\` isn\'t a proper amount.`);
                 }
 
-                paycheck.pay(price, (err, result) => {
+                paycheck.spend(price, (err, result) => {
                     if (err) {
                         trackError(err);
                         reply(`Paycheck error: ${err.message}`);
