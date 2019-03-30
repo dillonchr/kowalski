@@ -6,7 +6,7 @@ const is = {
 };
 
 module.exports = bot => {
-    bot.hears(['encrypt', 'decrypt'], (reply, {content}) => {
+    bot.hears(['encrypt', 'decrypt'], ({reply, content}) => {
         if (is.encrypt(content) || is.decrypt(content)) {
             const firstSemi = content.indexOf(';');
             const offset = +content.substr(0, firstSemi).match(/\d+/)[0];

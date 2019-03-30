@@ -1,9 +1,9 @@
 const { add, connect } = require('@dillonchr/reminders');
 
 module.exports = bot => {
-    bot.hears(['remind '], (reply, m) => {
-        const command = m.content.trim().replace(/^remind /i, '');
-        const userId = m.author.id;
+    bot.hears(['remind '], ({reply, content, author}) => {
+        const command = content.trim().replace(/^remind /i, '');
+        const userId = author.id;
         add({
             command,
             userId,
@@ -16,9 +16,9 @@ module.exports = bot => {
         });
     });
 
-    /*connect(({userId, message}) => {
-        bot.sendMessage({to: userId, message});
-    });*/
+    connect(({userId, message}) => {
+        bot.sendMessage(userId, message);
+    });
 };
 
 

@@ -1,7 +1,7 @@
 const {inflation} = require('@dillonchr/funhouse');
 
 module.exports = bot => {
-    bot.hears(['how much was '], (reply, {content}) => {
+    bot.hears(['how much was '], ({reply, content}) => {
         const matches = content.match(/\$([\d\.]+) in (\d{4})\??$/i);
 
         if (matches && matches.length === 3) {

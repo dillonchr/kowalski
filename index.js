@@ -18,7 +18,7 @@ const bot = require('@dillonchr/discordbot');
 (require('./handlers/cryptonics'))(bot);
 (require('./handlers/reminders'))(bot);
 
-bot.hears(['uptime'], reply => {
+bot.hears(['uptime'], ({reply}) => {
     let uptime = process.uptime();
     let unit = 'second';
     if (uptime > 60) {
@@ -43,5 +43,5 @@ bot.hears(['uptime'], reply => {
     reply(`:robot_face: I have been running for ${uptime} ${unit} on ${os.hostname()}.`);
 });
 
-bot.hears(['whoami'], (reply, m) => reply(`${m.author.username} \`${m.author.id}\``));
+bot.hears(['whoami'], ({reply, author}) => reply(`${author.username} \`${author.id}\``));
 

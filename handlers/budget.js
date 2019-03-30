@@ -12,9 +12,9 @@ const respondWithBalance = (reply, userId) => {
 };
 
 module.exports = bot => {
-    bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, (reply, m) => {
-        const action = m.content.trim();
-        const userId = m.author.id;
+    bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, ({reply, content, author}) => {
+        const action = content.trim();
+        const userId = author.id;
 
         if (/^(budget )?balance/i.test(action)) {
             respondWithBalance(reply, userId);
@@ -25,7 +25,7 @@ module.exports = bot => {
                     trackError(err);
                     return reply(`Budget broke: ${err.message}`);
                 }
-                reply(`@${m.author.username} budget balance: $${data.balance}`);
+                reply(`Budget balance: $${data.balance}`);
             });
         }
     });
