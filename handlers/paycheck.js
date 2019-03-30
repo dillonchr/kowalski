@@ -9,8 +9,8 @@ const is = {
 };
 
 module.exports = bot => {
-    bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, (reply, m) => {
-        const action = m.content.trim();
+    bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, ({reply, content}) => {
+        const action = content.trim();
 
         if (is.balance(action)) {
             paycheck.balance((err, bal) => {
@@ -29,10 +29,10 @@ module.exports = bot => {
                     return reply(`\`${price}\` isn\'t a proper amount.`);
                 }
 
-                paycheck.pay(price, (err, result) => {
+                paycheck.spend(price, (err, result) => {
                     if (err) {
                         trackError(err);
-                        return reply(`Paycheck error: ${err.message}`);
+                        reply(`Paycheck error: ${err.message}`);
                     } else {
                         reply(`Paycheck balance: $${result.balance}`);
                     }
@@ -45,7 +45,7 @@ module.exports = bot => {
             paycheck.reset(action.substr(5).trim(), (err, result) => {
                 if (err) {
                     trackError(err);
-                    return reply(`Paycheck error: ${err.message}`);
+                    reply(`Paycheck error: ${err.message}`);
                 } else {
                     reply(`Paycheck balance reset to $${result.balance} :+1:`);
                 }

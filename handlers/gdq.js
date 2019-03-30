@@ -7,7 +7,7 @@ const timestampToDisplayTime = (timestamp) => {
 };
 
 module.exports = bot => {
-    bot.hears(['gdq', ':video_game:'], reply => {
+    bot.hears(['gdq', ':video_game:'], ({reply}) => {
         gdq((err, g) => {
             if (g && g.length) {
                 const response = g
