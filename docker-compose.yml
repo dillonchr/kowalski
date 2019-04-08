@@ -8,7 +8,11 @@ services:
   kowalski:
     env_file:
       - .env
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-timezone
     restart: always
+    volumes:
+      - /mnt/wisconsin/flexo:/data
     networks:
       - funhouse_funhouse
