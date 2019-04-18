@@ -92,12 +92,14 @@ const writeWeightData = (weightData, fn) => {
     fs.writeFile(jsonPath, JSON.stringify(weightData), 'utf-8', fn);
 };
 
+const channelRegex = /^[\d.]+/;
+
 module.exports = bot => {
-    bot.hears(['@'], ({reply, content, author}) => {
-        if (/^@/.test(content)) {
-            const lbs = content.match(/@([\d.]+)/i);
-            if (lbs.length === 2) {
-                const currentWeight = +lbs[1];
+    bot.hearsAnythingInChannel(process.env.WEIGHT_CHANNEL_ID, ({reply, author, content}) => {
+        if (channelRegex.test(content)) {
+            const lbs = content.match(channelRegex);
+            if (lbs.length) {
+                const currentWeight = +lbs[0];
                 recordWeight(author.id, currentWeight, reply);
             } else {
                 reply('I missed the amount....');
