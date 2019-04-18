@@ -10,10 +10,10 @@ const is = {
 };
 
 module.exports = bot => {
-    bot.hears(['ebay', 'abe'], (reply, m) => {
-        if (is.abe(m.content)) {
+    bot.hears(['ebay', 'abe'], ({reply, content}) => {
+        if (is.abe(content)) {
             reply(confirmMessage());
-            const messagePieces = m.content.substr(4).split(',').map(s => s.trim());
+            const messagePieces = content.substr(4).split(',').map(s => s.trim());
             const [author, title, publisher, year, format] = messagePieces;
             const query = {
                 author,
@@ -33,9 +33,9 @@ module.exports = bot => {
                 const searchTitle = messagePieces.join(' - ');
                 reply(funhouseResponseTransformer(searchTitle, response.url, response.results));
             });
-        } else if (is.ebay(m.content)) {
+        } else if (is.ebay(content)) {
             reply(confirmMessage());
-            const searchSansEbay = m.content.substr(5);
+            const searchSansEbay = content.substr(5);
             const isLive = is.live(searchSansEbay);
             const isSold = is.sold(searchSansEbay);
             const searchTitle = searchSansEbay.replace(/^live|sold/i, '').trim();
