@@ -14,7 +14,7 @@
   "license": "GPL-2.0",
   "dependencies": {
     "@dillonchr/discordbot": "^1.0.5",
-    "@dillonchr/funhouse": "^1.0.1",
+    "@dillonchr/funhouse": "^1.1.1",
     "@dillonchr/reminders": "^1.0.0",
     "dotenv": "^4.0.0",
     "moment": "^2.22.2",
