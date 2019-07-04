@@ -1,19 +1,21 @@
 const fs = require('fs');
 const {trackError} = require('../utils');
-const TRANS_PATH = '/data/europeTrans.json';
-let europeTransactions;
+const TRANS_PATH = '/data/tempBudgetTrans.json';
+
+let tempBudgetTransactions;
+
 fs.readFile(TRANS_PATH, (err, data) => {
     if (err) {
         console.error(err);
         return trackError(err);
     }
-    europeTransactions = JSON.parse(data);
-
+    tempBudgetTransactions = JSON.parse(data);
 });
+
 const saveTransactions = () => {
     fs.writeFile(
         TRANS_PATH,
-        JSON.stringify(europeTransactions),
+        JSON.stringify(tempBudgetTransactions),
         'utf-8',
         (err) => {
             if (err) {
@@ -21,26 +23,28 @@ const saveTransactions = () => {
             }
         });
 };
+
 const addTrans = (price, description) => {
-    europeTransactions.push({
+    tempBudgetTransactions.push({
         price,
         description
     });
     saveTransactions();
 };
+
 const getBalance = () => {
-    return '$' + europeTransactions.reduce((sum, trans) => sum - trans.price, 0).toFixed(2);
+    return '$' + tempBudgetTransactions.reduce((sum, trans) => sum - trans.price, 0).toFixed(2);
 };
+
 const is = {
     balance: s => /^balance/i.test(s),
-    help: s => /^help$/i.test(s),
     debit: s => /([\d.-]+),(.*)$/.test(s)
 };
 
 module.exports = bot => {
-    bot.hearsAnythingInChannel(process.env.EUROPE_CHANNEL_ID, (reply, m) => {
+    bot.hearsAnythingInChannel(process.env.TEMP_BUDGET_CHANNEL_ID, (reply, m) => {
         const action = m.content.trim();
-        const sendBackBalance = () => reply(`Europe Budget Balance: ${getBalance()}`);
+        const sendBackBalance = () => reply(`Temporary Budget Balance: ${getBalance()}`);
 
         if (is.balance(action)) {
             sendBackBalance();
@@ -56,7 +60,7 @@ module.exports = bot => {
                 sendBackBalance();
             } catch (err) {
                 trackError(err);
-                reply(`Europe Budget error: ${err.message}`);
+                reply(`Temporary Budget error: ${err.message}`);
             }
         }
     });
