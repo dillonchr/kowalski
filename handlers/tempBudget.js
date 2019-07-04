@@ -42,8 +42,8 @@ const is = {
 };
 
 module.exports = bot => {
-    bot.hearsAnythingInChannel(process.env.TEMP_BUDGET_CHANNEL_ID, (reply, m) => {
-        const action = m.content.trim();
+    bot.hearsAnythingInChannel(process.env.TEMP_BUDGET_CHANNEL_ID, ({reply, content}) => {
+        const action = content.trim();
         const sendBackBalance = () => reply(`Temporary Budget Balance: ${getBalance()}`);
 
         if (is.balance(action)) {
