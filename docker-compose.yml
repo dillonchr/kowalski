@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     build: .
-    restart: on-failure
+    restart: always
     volumes:
       - /mnt/wisconsin/europe:/data
     networks:

@@ -3,7 +3,7 @@ const {trackError} = require('../utils/index');
 
 
 module.exports = (controller) => {
-    controller.hears(['daily text', 'dailytext'], reply => dailytext((err, t) => {
+    controller.hears(['daily text', 'dailytext'], ({reply}) => dailytext((err, t) => {
         if (err) {
             reply(`Text problem: ${err.message}`);
             return trackError(err);

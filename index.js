@@ -14,13 +14,12 @@ const bot = require('@dillonchr/discordbot');
 (require('./handlers/dailytext'))(bot);
 (require('./handlers/budget'))(bot);
 (require('./handlers/paycheck'))(bot);
-(require('./handlers/fired'))(bot);
 (require('./handlers/inflation'))(bot);
 (require('./handlers/cryptonics'))(bot);
-(require('./handlers/wfh'))(bot);
+(require('./handlers/reminders'))(bot);
 (require('./handlers/europe'))(bot);
 
-bot.hears(['uptime'], reply => {
+bot.hears(['uptime'], ({reply}) => {
     let uptime = process.uptime();
     let unit = 'second';
     if (uptime > 60) {
@@ -31,11 +30,19 @@ bot.hears(['uptime'], reply => {
         uptime = uptime / 60;
         unit = 'hour';
     }
+    if (uptime > 24) {
+        uptime = uptime / 24;
+        unit = 'day';
+    }
+    if (uptime > 30) {
+        uptime = uptime / 30;
+        unit = 'month';
+    }
     if (uptime != 1) {
         unit = unit + 's';
     }
     reply(`:robot_face: I have been running for ${uptime} ${unit} on ${os.hostname()}.`);
 });
 
-bot.hears(['whoami'], (reply, m) => reply(`${m.author.username} \`${m.author.id}\``));
+bot.hears(['whoami'], ({reply, author}) => reply(`${author.username} \`${author.id}\``));
 
