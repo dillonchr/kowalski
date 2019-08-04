@@ -17,6 +17,7 @@ const bot = require('@dillonchr/discordbot');
 (require('./handlers/inflation'))(bot);
 (require('./handlers/cryptonics'))(bot);
 (require('./handlers/reminders'))(bot);
+(require('./handlers/tempBudget'))(bot);
 (require('./handlers/weight'))(bot);
 
 bot.hears(['uptime'], ({reply}) => {
