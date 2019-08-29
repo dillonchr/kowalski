@@ -51,29 +51,35 @@ const replyWithErrorHandling = (reply, err, message) => {
   }
 }
 
+const ROUTES = {
+  home: [
+    {route: 2, stop: 6604},
+    {route: 3, stop: 6604}
+  ],
+  pg: [
+    {route: 30, stop: 6523}
+  ],
+  mtg: [
+    {route: 2, stop: 6126},
+    {route: 3, stop: 6126},
+    {route: 47, stop: 6828},
+    {route: 49, stop: 6828}
+  ],
+  union: [
+    {route: 2, stop: 6126},
+    {route: 3, stop: 6126}
+  ]
+}
+
 module.exports = (bot) => {
-  bot.hears(['muni home'], ({reply}) => {
-    const buses =
-      [
-        {
-          route: 2,
-          stop: 6604
-        },
-        {
-          route: 3,
-          stop: 6604
-        }
-      ]
-    getSecondsUntilNextBus(buses, replyWithErrorHandling.bind(this, reply))
-  })
-  bot.hears(['muni pg'], ({reply}) => {
-    const buses = [
-      {
-        route: 30,
-        stop: 6523
+  bot.hears(['muni'], ({reply, content}) => {
+    const cmd = content.match(/^muni ([a-z]+)/i)
+    if (cmd) {
+      const key = cmd[1].toLowerCase()
+      if (ROUTES[key]) {
+        getSecondsUntilNextBus(ROUTES[key], replyWithErrorHandling.bind(this, reply))
       }
-    ]
-    getSecondsUntilNextBus(buses, replyWithErrorHandling.bind(this, reply))
+    }
   })
 }
 
