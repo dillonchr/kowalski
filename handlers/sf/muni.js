@@ -60,8 +60,8 @@ const ROUTES = {
     {route: 30, stop: 6523}
   ],
   mtg: [
-    {route: 2, stop: 6126},
-    {route: 3, stop: 6126},
+    {route: 2, stop: 6594},
+    {route: 3, stop: 6594},
     {route: 47, stop: 6828},
     {route: 49, stop: 6828}
   ],
