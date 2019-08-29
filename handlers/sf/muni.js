@@ -68,6 +68,13 @@ const ROUTES = {
   union: [
     {route: 2, stop: 6126},
     {route: 3, stop: 6126}
+  ],
+  crissy: [
+    {route: 2, stop: 6594},
+    {route: 3, stop: 6594},
+    {route: 47, stop: 6830},
+    {route: 49, stop: 6830},
+    {route: 30, stop: 6801}
   ]
 }
 
@@ -75,7 +82,7 @@ module.exports = (bot) => {
   bot.hears(['muni'], ({reply, content}) => {
     const cmd = content.match(/^muni ([a-z]+)/i)
     if (cmd) {
-      const key = cmd[1].toLowerCase()
+      const key = cmd[1]
       if (ROUTES[key]) {
         getSecondsUntilNextBus(ROUTES[key], replyWithErrorHandling.bind(this, reply))
       }
