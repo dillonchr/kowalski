@@ -107,7 +107,7 @@ module.exports = bot => {
         }
     });
     //  this is necessary because discordbot doesn't check if it's ready
-    setTimeout(() => sendReminders(bot), 10000);
+    //  setTimeout(() => sendReminders(bot), 10000);
 };
 
 
