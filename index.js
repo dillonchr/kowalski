@@ -19,6 +19,8 @@ const bot = require('@dillonchr/discordbot');
 (require('./handlers/reminders'))(bot);
 (require('./handlers/tempBudget'))(bot);
 (require('./handlers/weight'))(bot);
+(require('./handlers/sf/gg'))(bot);
+(require('./handlers/sf/muni'))(bot);
 
 bot.hears(['uptime'], ({reply}) => {
     let uptime = process.uptime();
