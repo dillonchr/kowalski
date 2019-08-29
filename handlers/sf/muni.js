@@ -1,54 +1,79 @@
-const http = require('http')
+const fetch = require('@dillonchr/fetch')
+const moment = require('moment')
 
-const getUrl = (route, stopId) => `http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&r=${route}&s=${stopId}`
+const getUrl = (stops) => stops.reduce((url, {route, stop}) => `${url}&stops=${route}|${stop}`, 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=sf-muni')
 
-const getNextStopTimes = (route, stopId, done) => {
-  const req = http.get(getUrl(route, stopId), (res) => {
-    let body = ''
-    res.on('data', chunk => body += chunk)
-    res.on('end', () => done(null, JSON.parse(body)))
-  })
-  req.on('error', err => done(err))
+const getNextStopTimes = (buses, done) => {
+  fetch({url: getUrl(buses)}, done)
 }
 
-const getSecondsUntilNextBus = (bus, stop, done) => {
-  getNextStopTimes(bus, stop || 6604, (err, res) => {
+const getNextStopFromPrediction = (result) => {
+  const { routeTitle: bus, direction } = result
+  if (!direction) {
+    return `**#${bus}** - *N/A*`
+  }
+  const dir = Array.isArray(direction) ? direction[0] : direction
+  const { prediction } = dir
+  const nextStop = Array.isArray(prediction) ? prediction[0] : prediction
+  const seconds = +nextStop.seconds
+  const min = ~~(seconds/60)
+  const sec = (seconds%60).toString().padStart(2, '0')
+  const eta = moment(+nextStop.epochTime).utcOffset(-7).format('h:mm:ss a')
+  return `**#${bus} ${dir.title}** - ${eta} - ${min}m ${sec}s`
+}
+
+const getSecondsUntilNextBus = (buses, done) => {
+  getNextStopTimes(buses, (err, res) => {
     if (err) {
       return done(err)
     }
     try {
-      const { direction } = res.predictions
-      const { prediction } = Array.isArray(direction) ? direction[0] : direction
-      const seconds = +(Array.isArray(prediction) ? prediction[0] : prediction).seconds
-      done(null, seconds)
+      let response;
+      if (Array.isArray(res.predictions)) {
+        response = res.predictions
+          .map(getNextStopFromPrediction)
+          .join('\n')
+      } else {
+        response = getNextStopFromPrediction(res.predictions)
+      }
+      done(null, response)
     } catch(err) {
       done(err)
     }
   })
 }
 
-const replyWithTime = (reply, bus, err, seconds) => {
+const replyWithErrorHandling = (reply, err, message) => {
   if (err) {
-    reply(`Something blew up when fetching ${bus}'s predictions: ${err.toString()}`)
+    reply(`Something blew up when fetching predictions: ${err.toString()}`)
   } else {
-    const min = ~~(seconds/60)
-    const sec = (seconds%60).toString().padStart(2, '0')
-    reply(`**#${bus}** - ${min}:${sec}`)
+    reply(message)
   }
 }
 
 module.exports = (bot) => {
   bot.hears(['muni home'], ({reply}) => {
-    [2,3]
-        .forEach(bus => {
-          getSecondsUntilNextBus(bus, null, replyWithTime.bind(this, reply, bus))
-        })
+    const buses =
+      [
+        {
+          route: 2,
+          stop: 6604
+        },
+        {
+          route: 3,
+          stop: 6604
+        }
+      ]
+    getSecondsUntilNextBus(buses, replyWithErrorHandling.bind(this, reply))
   })
   bot.hears(['muni pg'], ({reply}) => {
-    [30]
-        .forEach(bus => {
-          getSecondsUntilNextBus(bus, 6523, replyWithTime.bind(this, reply, bus))
-        })
+    const buses = [
+      {
+        route: 30,
+        stop: 6523
+      }
+    ]
+    getSecondsUntilNextBus(buses, replyWithErrorHandling.bind(this, reply))
   })
 }
 
