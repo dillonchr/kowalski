@@ -1,5 +1,5 @@
 FROM mhart/alpine-node:10.7
-RUN apk update && apk upgrade && apk add --no-cache tzdata file imagemagick
+RUN apk update && apk upgrade && apk add --no-cache tzdata file imagemagick curl
 ENV TZ America/Chicago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etclocaltime && echo $TZ > /etc/timezone
 WORKDIR /code/
