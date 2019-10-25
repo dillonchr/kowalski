@@ -23,11 +23,11 @@ if [ "$?" -eq "0" ]; then
     convert -delay 20 -loop 0 "${LOCATION}/fr-*.jpg" $ANIM_PATH
 
     if [ "$?" -eq "0" ]; then
-        rm $LOCATION/fr-*.jpg
         echo $ANIM_PATH
     else
         echo "Dang. Sorry dude."
     fi
+    rm $LOCATION/fr-*.jpg
 else
     echo "Sorry dude."
 fi
