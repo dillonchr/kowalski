@@ -13,7 +13,8 @@
   "author": "dillonchr",
   "license": "GPL-2.0",
   "dependencies": {
-    "@dillonchr/discordbot": "^1.0.5",
+    "@dillonchr/discordbot": "^1.0.7",
+    "@dillonchr/fetch": "^1.0.1",
     "@dillonchr/funhouse": "^1.1.1",
     "@dillonchr/reminders": "^1.0.0",
     "dotenv": "^4.0.0",
