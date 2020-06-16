@@ -13,19 +13,29 @@ module.exports = bot => {
         ),
       GG_FRAME_COUNT * 1000
     );
-    exec("../../make.sh", { cwd: __dirname, shell: true }, (err, o, stdErr) => {
-      const gifPath = o && !err && o.trim();
-      clearTimeout(gifTimerId);
-      if (o && o.trim().match(/\.gif$/)) {
-        reply(emoji() + " -> " + o.trim(), { files: [o.trim()] });
-      } else {
-        reply(`Couldn't build your gif!
+    exec(
+      "../../make.sh",
+      { cwd: __dirname, shell: true },
+      async (err, o, stdErr) => {
+        const gifPath = o && !err && o.trim();
+        clearTimeout(gifTimerId);
+        if (gifPath && gifPath.match(/\.gif$/)) {
+          await reply(emoji(), {
+            files: [
+              {
+                attachment: gifPath
+              }
+            ]
+          });
+        } else {
+          reply(`Couldn't build your gif!
         ${emoji()}
         \`\`\`
         ${stdErr}
         ${o}
         \`\`\``);
+        }
       }
-    });
+    );
   });
 };
