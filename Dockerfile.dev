@@ -1,5 +1,7 @@
 FROM mhart/alpine-node:10.7.0
-RUN apk update && apk upgrade && apk add git file imagemagick curl && npm i -g nodemon > /dev/null
+RUN apk update && apk upgrade && apk add tzdata git file imagemagick curl && npm i -g nodemon > /dev/null
+ENV TZ America/Chicago
+RUN ln -snf /usr/share/zoneinfo/$TZ /etclocaltime && echo $TZ > /etc/timezone
 WORKDIR /code/
 COPY package*.json ./
 RUN npm i > /dev/null
