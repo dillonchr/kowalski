@@ -5,13 +5,16 @@ const emoji = () => (Date.now() % 2 === 0 ? ":foggy:" : ":bridge_at_night:");
 const GG_FRAME_COUNT = 10;
 
 module.exports = bot => {
-  bot.hears(["gg", "golden gate"], ({ reply }) => {
+  bot.hears(["gg", "golden gate"], async message => {
+    const { reply } = message;
+    await message.react("⏳");
+
     const gifTimerId = setTimeout(
       () =>
         reply(
           "Wasn't able to build your gif, bud.\nSorry about that.\n" + emoji()
         ),
-      GG_FRAME_COUNT * 1000
+      (GG_FRAME_COUNT + 1) * 1000
     );
     exec(
       "../../make.sh",
