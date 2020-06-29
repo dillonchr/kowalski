@@ -32,7 +32,8 @@ const bot = {
       if (queries.some(q => lowercaseContent.includes(q))) {
         message.reply = (msg, opts) => message.channel.send(msg, opts);
         handler(message);
-        return true;
+        //  unless we build a handler response, don't stop handling messages
+        // return true;
       }
     });
   },
@@ -41,7 +42,8 @@ const bot = {
       if (channelId === message.channel.id) {
         message.reply = (msg, opts) => message.channel.send(msg, opts);
         handler(message);
-        return true;
+        //  same as above ^
+        // return true;
       }
     });
   }
