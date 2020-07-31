@@ -32,6 +32,7 @@ module.exports = bot => {
         }
 
         message.react("👌");
+        reply(`Paycheck: $${result.balance}`);
 
         paycheck.spend(price, async (err, result) => {
           if (err) {
@@ -50,7 +51,6 @@ module.exports = bot => {
                   "Need to give 'Modify Channel' permissions to Kowalski"
                 );
               }
-              reply(`Paycheck balance: $${result.balance}`);
             }
           }
         });
@@ -59,12 +59,21 @@ module.exports = bot => {
         reply(`Paycheck debit error: ${err.message}`);
       }
     } else if (is.reset(action)) {
-      paycheck.reset(action.substr(5).trim(), (err, result) => {
+      paycheck.balance((err, bal) => {
         if (err) {
+          reply("Oops");
           trackError(err);
-          reply(`Paycheck error: ${err.message}`);
         } else {
-          reply(`Paycheck balance reset to $${result.balance} :+1:`);
+          const leftovers = bal.balance;
+
+          paycheck.reset(action.substr(5).trim(), (err, result) => {
+            if (err) {
+              trackError(err);
+              reply(`Paycheck error: ${err.message}`);
+            } else {
+              reply(`Paycheck balance reset to $${result.balance} :+1:`);
+            }
+          });
         }
       });
     }
