@@ -9,6 +9,9 @@ const is = {
   reset: s => /^reset /i.test(s)
 };
 
+const EMOJIS = ["🤑", "👑", "💸", "💵", "💰", "💳", "⚖️"];
+const emote = () => EMOJIS[~~(Math.random() * EMOJIS.length)];
+
 module.exports = bot => {
   bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, async message => {
     const action = message.content.trim();
@@ -32,7 +35,6 @@ module.exports = bot => {
         }
 
         message.react("👌");
-        reply(`Paycheck: $${result.balance}`);
 
         paycheck.spend(price, async (err, result) => {
           if (err) {
@@ -40,6 +42,7 @@ module.exports = bot => {
             reply(`Paycheck error: ${err.message}`);
           } else {
             try {
+              reply(`${emote()} $${result.balance}`);
               await message.channel.edit({
                 topic: `$${result.balance} as of ${moment().format(
                   "h:mma ddd"
