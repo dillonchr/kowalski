@@ -61,6 +61,7 @@ require("./handlers/cryptonics")(bot);
 require("./handlers/reminders")(bot);
 require("./handlers/sf/gg")(bot);
 require("./handlers/xe")(bot);
+require("./handlers/shindig")(bot);
 
 bot.hears(["uptime"], ({ reply }) => {
   let uptime = process.uptime();
