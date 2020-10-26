@@ -24,18 +24,25 @@ function removeZoomUrl() {
 }
 
 module.exports = bot => {
-  bot.hears(["shindig "], ({ reply, content }) => {
-    const action = content.trim();
+  bot.hears(["shindig "], async function (message) {
+    const action = message.content.trim();
 
     try {
       const [ignore, url] = action.match(/^shindig ([^ ]+)$/i);
 
       if (url) {
-        publishZoomUrl(url);
+        if (url === "remove") {
+          removeZoomUrl();
+          clearTimeout(expirationTimerId);
+          await message.react("🗑");
+        } else {
+          publishZoomUrl(url);
+          await message.react("🎬");
+        }
       }
     } catch (err) {
       trackError(err);
-      reply(`Shindig error: ${err.message}`);
+      message.reply(`Shindig error: ${err.message}`);
     }
   });
 };
