@@ -10,7 +10,7 @@ function publishZoomUrl(url) {
       trackError(err);
     } else {
       clearTimeout(expirationTimerId);
-      expirationTimerId = setTimeout(removeZoomUrl, 60000);
+      expirationTimerId = setTimeout(removeZoomUrl, 60 * 60 * 1000);
     }
   });
 }
