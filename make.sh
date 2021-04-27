@@ -8,7 +8,7 @@ ID="$(curl -s http://173.164.254.148/ptz.cgi\?doc\=East%20Beach%20Webcam\&xml\=1
 URL="http://173.164.254.148/vid.cgi?id=${ID}&doc=East%20Beach%20Webcam&i=1"
 
 if [ "$?" -eq "0" ]; then
-  for i in $(seq -f "%02g" 1 20)
+  for i in $(seq -w 1 20)
   do
     curl -s "${URL}&r=${RANDOM}" > "${LOCATION}/fr-$(date +"%s")-${i}.jpg"
     if [ ! "$?" -eq "0" ]; then
