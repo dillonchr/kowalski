@@ -9,6 +9,9 @@ const is = {
   reset: s => /^reset /i.test(s)
 };
 
+const EMOJIS = ["🤑", "👑", "💸", "💵", "💰", "💳", "⚖️"];
+const emote = () => EMOJIS[~~(Math.random() * EMOJIS.length)];
+
 module.exports = bot => {
   bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, async message => {
     const action = message.content.trim();
@@ -39,6 +42,7 @@ module.exports = bot => {
             reply(`Paycheck error: ${err.message}`);
           } else {
             try {
+              reply(`${emote()} $${result.balance}`);
               await message.channel.edit({
                 topic: `$${result.balance} as of ${moment().format(
                   "h:mma ddd"
@@ -50,7 +54,6 @@ module.exports = bot => {
                   "Need to give 'Modify Channel' permissions to Kowalski"
                 );
               }
-              reply(`Paycheck balance: $${result.balance}`);
             }
           }
         });
@@ -59,12 +62,21 @@ module.exports = bot => {
         reply(`Paycheck debit error: ${err.message}`);
       }
     } else if (is.reset(action)) {
-      paycheck.reset(action.substr(5).trim(), (err, result) => {
+      paycheck.balance((err, bal) => {
         if (err) {
+          reply("Oops");
           trackError(err);
-          reply(`Paycheck error: ${err.message}`);
         } else {
-          reply(`Paycheck balance reset to $${result.balance} :+1:`);
+          const leftovers = bal.balance;
+
+          paycheck.reset(action.substr(5).trim(), (err, result) => {
+            if (err) {
+              trackError(err);
+              reply(`Paycheck error: ${err.message}`);
+            } else {
+              reply(`Paycheck balance reset to $${result.balance} :+1:`);
+            }
+          });
         }
       });
     }
