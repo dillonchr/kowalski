@@ -9,7 +9,19 @@ const is = {
   reset: s => /^reset /i.test(s)
 };
 
-const EMOJIS = ["🤑", "👑", "💸", "💵", "💰", "💳", "⚖️"];
+const EMOJIS = [
+  "🤑",
+  "👑",
+  "💸",
+  "💵",
+  "💰",
+  "💳",
+  "⚖️",
+  "🌼",
+  "💶",
+  "🥇",
+  "🌝"
+];
 const emote = () => EMOJIS[~~(Math.random() * EMOJIS.length)];
 
 module.exports = bot => {
@@ -17,13 +29,17 @@ module.exports = bot => {
     const action = message.content.trim();
     const { reply } = message;
 
+    function jazzedUpReply(replyStr) {
+      reply(replyStr.replace(/\$100.00$/, "💯").replace(/\$-?0\.00$/, "$0 💀"));
+    }
+
     if (is.balance(action)) {
       paycheck.balance((err, bal) => {
         if (err) {
           trackError(err);
           reply(`Probalo! ${err.message}`);
         } else {
-          reply(`You have $${bal.balance}`);
+          jazzedUpReply(`You have $${bal.balance}`);
         }
       });
     } else if (is.debit(action) && !is.budget(action)) {
@@ -42,7 +58,7 @@ module.exports = bot => {
             reply(`Paycheck error: ${err.message}`);
           } else {
             try {
-              reply(`${emote()} $${result.balance}`);
+              jazzedUpReply(`${emote()} $${result.balance}`);
               await message.channel.edit({
                 topic: `$${result.balance} as of ${moment().format(
                   "h:mma ddd"
