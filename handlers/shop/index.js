@@ -9,6 +9,24 @@ function printItem(id, name, extraMessage = "") {
     .padStart(4, "0")}\` **${name}** ${extraMessage}`;
 }
 
+function* toIds(xrange) {
+  for (const num of xrange.split(",")) {
+    const pieces = num.split("..");
+    if (1 < pieces.length) {
+      const [start, end] = pieces;
+      for (let i = parseInt(start); i <= parseInt(end); i++) {
+        yield String(i);
+      }
+    } else {
+      yield num;
+    }
+  }
+}
+
+function toDedupedIds(xrange) {
+  return Array.from(toIds(xrange)).filter((p, i, a) => a.indexOf(p) === i);
+}
+
 module.exports = bot => {
   bot.hears(["shop"], async ({ channel, content, reply }) => {
     if (null != channel && "dm" === channel.type) {
@@ -37,15 +55,21 @@ module.exports = bot => {
           case "r":
           case "b":
             {
-              const id = action.shift();
-              console.log({ bought: id });
-              db.run("DELETE FROM shop WHERE id=?", [id], function (err) {
-                if (err) {
-                  reply(`Uh oh! Couldn't remove \`id:${id}\``);
-                } else {
-                  reply("I gotchu");
-                }
-              });
+              const id = parseInt(action.shift(), 16);
+              if (!isNaN(id)) {
+                console.log({ bought: id });
+                db.run("DELETE FROM shop WHERE id=?", [id], function (err) {
+                  if (err) {
+                    reply(`Uh oh! Couldn't remove \`id:${id}\``);
+                  } else {
+                    reply("I gotchu");
+                  }
+                });
+              } else {
+                reply(
+                  `Sorry, please try sending just the ID of the item, not its name`
+                );
+              }
             }
             break;
 
@@ -65,13 +89,32 @@ module.exports = bot => {
             break;
 
           case "clear":
-            db.run("DELETE FROM shop", function (err) {
-              if (err) {
-                reply("Whoops! Can't clear.");
-              } else {
-                reply("Done deal.");
+            {
+              let deleteCommand = "DELETE FROM shop";
+              if (action.join(" ").length) {
+                deleteCommand += ` WHERE id NOT IN (${toDedupedIds(
+                  action.shift()
+                ).join(",")})`;
               }
-            });
+              console.log({ deleteCommand });
+              db.run(deleteCommand, function (err) {
+                if (err) {
+                  reply("Whoops! Can't clear.");
+                } else {
+                  reply("Done deal.");
+                }
+              });
+            }
+            break;
+
+          case "x":
+            {
+              try {
+                console.log({ ids: toDedupedIds(action.shift()) });
+              } catch (err) {
+                console.log({ err });
+              }
+            }
             break;
 
           default:
