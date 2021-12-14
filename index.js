@@ -62,6 +62,7 @@ require("./handlers/reminders")(bot);
 require("./handlers/sf/gg")(bot);
 require("./handlers/xe")(bot);
 require("./handlers/shindig")(bot);
+require("./handlers/shop")(bot);
 
 bot.hears(["uptime"], ({ reply }) => {
   let uptime = process.uptime();
