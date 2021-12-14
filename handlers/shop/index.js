@@ -4,9 +4,7 @@ const DB_PATH = "/data/shop.sqlite";
 const db = new sqlite3.Database(DB_PATH);
 
 function printItem(id, name, extraMessage = "") {
-  return `\`${parseInt(id, 10)
-    .toString(16)
-    .padStart(4, "0")}\` **${name}** ${extraMessage}`;
+  return `\`${String(id).padStart(4, "0")}\` **${name}** ${extraMessage}`;
 }
 
 function* toIds(xrange) {
@@ -15,10 +13,10 @@ function* toIds(xrange) {
     if (1 < pieces.length) {
       const [start, end] = pieces;
       for (let i = parseInt(start); i <= parseInt(end); i++) {
-        yield String(i);
+        yield i;
       }
     } else {
-      yield num;
+      yield parseInt(num);
     }
   }
 }
@@ -55,21 +53,23 @@ module.exports = bot => {
           case "r":
           case "b":
             {
-              const id = parseInt(action.shift(), 16);
-              if (!isNaN(id)) {
-                console.log({ bought: id });
-                db.run("DELETE FROM shop WHERE id=?", [id], function (err) {
+              const ids = toDedupedIds(action.shift());
+              console.log({ bought: ids });
+              // unhappy with this, but couldn't figure out how to actually parameterize it from node
+              db.run(
+                `DELETE FROM shop WHERE id IN (${ids.join(",")})`,
+                [],
+                function (err) {
                   if (err) {
-                    reply(`Uh oh! Couldn't remove \`id:${id}\``);
+                    console.log({ err });
+                    reply(
+                      `Sorry, please try sending just the ID of the item, not its name`
+                    );
                   } else {
                     reply("I gotchu");
                   }
-                });
-              } else {
-                reply(
-                  `Sorry, please try sending just the ID of the item, not its name`
-                );
-              }
+                }
+              );
             }
             break;
 
