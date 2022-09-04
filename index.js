@@ -17,7 +17,7 @@ client.on("ready", () => {
 client.on("message", message => {
   if (message.author.username !== client.user.username) {
     for (const h of handlers) {
-      if (h(message)) {
+      if (h({ ...message, client })) {
         break;
       }
     }
