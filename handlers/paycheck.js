@@ -37,7 +37,8 @@ module.exports = bot => {
 
           function jazzedUpReply(replyStr) {
             reply(
-              replyStr.replace(/\$100.00$/, "💯").replace(/\$-?0\.00$/, "$0 💀")
+              `> ${action}
+${replyStr.replace(/\$100.00$/, "💯").replace(/\$-?0\.00$/, "$0 💀")}`
             );
           }
 
