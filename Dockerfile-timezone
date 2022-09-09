@@ -1,9 +1,9 @@
-FROM mhart/alpine-node:10.7
-RUN apk update && apk upgrade && apk add --no-cache tzdata file imagemagick curl
+FROM node:18.9.0-buster-slim
+RUN apt update && apt upgrade && apt install -y tzdata git file imagemagick curl
 ENV TZ America/Chicago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etclocaltime && echo $TZ > /etc/timezone
 WORKDIR /code/
 COPY package*.json ./
-RUN npm i
+RUN npm i > /dev/null
 COPY . .
 CMD ["npm", "start"]

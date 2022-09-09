@@ -1,7 +1,7 @@
 require("dotenv").config();
 const os = require("os");
 const trackError = require("./utils/track-error");
-const { Client } = require("discord.js");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 
 if (!process.env.DISCORD_TOKEN) {
   trackError(new Error("no token in environment"));
@@ -9,12 +9,19 @@ if (!process.env.DISCORD_TOKEN) {
 }
 
 const handlers = [];
-const client = new Client();
-client.on("ready", () => {
+const client = new Client({
+  intents:
+    GatewayIntentBits.Guilds |
+    GatewayIntentBits.GuildMessages |
+    GatewayIntentBits.DirectMessages |
+    GatewayIntentBits.MessageContent,
+  partials: [Partials.Channel]
+});
+client.on("ready", c => {
   // eslint-disable-next-line no-console
   console.log("Location confirmed. Sending supplies.");
 });
-client.on("message", message => {
+client.on("messageCreate", message => {
   if (message.author.username !== client.user.username) {
     for (const h of handlers) {
       if (h({ ...message, client })) {
@@ -25,12 +32,22 @@ client.on("message", message => {
 });
 client.login(process.env.DISCORD_TOKEN);
 
+function replyBuilder(originalMessage, responseMsg, opts) {
+  if (!originalMessage.channel) {
+    client.channels.fetch(originalMessage.channelId).then(channel => {
+      channel.send(responseMsg, opts);
+    });
+  } else {
+    message.channel.send(responseMsg, opts);
+  }
+}
+
 const bot = {
   hears: (queries, handler) => {
     handlers.push(message => {
       const lowercaseContent = message.content.toLowerCase();
       if (queries.some(q => lowercaseContent.includes(q))) {
-        message.reply = (msg, opts) => message.channel.send(msg, opts);
+        message.reply = (msg, opts) => replyBuilder(message, msg, opts);
         handler(message);
         //  unless we build a handler response, don't stop handling messages
         // return true;
@@ -39,8 +56,8 @@ const bot = {
   },
   hearsAnythingInChannel: (channelId, handler) => {
     handlers.push(message => {
-      if (channelId === message.channel.id) {
-        message.reply = (msg, opts) => message.channel.send(msg, opts);
+      if (channelId === message.channelId) {
+        message.reply = (msg, opts) => replyBuilder(message, msg, opts);
         handler(message);
         //  same as above ^
         // return true;
