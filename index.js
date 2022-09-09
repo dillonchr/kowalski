@@ -17,14 +17,14 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   partials: [Partials.Channel]
 });
-client.on("ready", c => {
+client.on("ready", () => {
   // eslint-disable-next-line no-console
   console.log("Location confirmed. Sending supplies.");
 });
 client.on("messageCreate", message => {
   if (message.author.username !== client.user.username) {
     for (const h of handlers) {
-      if (h({ ...message, client })) {
+      if (h(message)) {
         break;
       }
     }
@@ -38,7 +38,7 @@ function replyBuilder(originalMessage, responseMsg, opts) {
       channel.send(responseMsg, opts);
     });
   } else {
-    message.channel.send(responseMsg, opts);
+    originalMessage.channel.send(responseMsg, opts);
   }
 }
 
