@@ -4,7 +4,7 @@
   "description": "A discord bot that grew up in slackville",
   "main": "index.js",
   "engines": {
-    "node": "7.10.1"
+    "node": "18.9.0"
   },
   "scripts": {
     "start": "node index.js",
@@ -16,9 +16,10 @@
     "@dillonchr/fetch": "^1.0.1",
     "@dillonchr/funhouse": "^1.1.1",
     "@dillonchr/reminders": "^1.0.0",
-    "discord.js": "^12.2.0",
+    "discord.js": "^14.3.0",
     "dotenv": "^4.0.0",
     "moment": "^2.22.2",
-    "raven": "^2.6.3"
+    "raven": "^2.6.3",
+    "sqlite3": "^5.0.2"
   }
 }

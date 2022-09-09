@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 
 services:
   kowalski:
@@ -6,7 +6,8 @@ services:
       - .env
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile-timezone
+    command: ["npx", "nodemon", "index.js"]
     restart: on-failure
     volumes:
       - /Users/dillon/git/DATAS:/data
