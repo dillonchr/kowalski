@@ -34,7 +34,7 @@ module.exports = bot => {
     }
 
     if (is.balance(action)) {
-      bankrupt.balance(message.channelID, (err, bal) => {
+      bankrupt.balance(message.channelId, (err, bal) => {
         if (err) {
           trackError(err);
           reply(`Probalo! ${err.message}`);
@@ -52,7 +52,7 @@ module.exports = bot => {
 
         message.react("👌");
 
-        bankrupt.spend(message.channelID, price, "f", async (err, result) => {
+        bankrupt.spend(message.channelId, price, "f", async (err, result) => {
           if (err) {
             trackError(err);
             reply(`Paycheck error: ${err.message}`);
@@ -79,7 +79,7 @@ module.exports = bot => {
       }
     } else if (is.reset(action)) {
       bankrupt.reset(
-        message.channelID,
+        message.channelId,
         action.substr(5).trim(),
         (err, result) => {
           if (err) {
