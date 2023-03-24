@@ -1,8 +1,8 @@
-const { budget } = require("@dillonchr/funhouse");
+const { bankrupt } = require("@dillonchr/funhouse");
 const { trackError } = require("../utils/index");
 
 const respondWithBalance = (reply, userId) => {
-  budget.balance(userId, (err, data) => {
+  bankrupt.balance(userId, (err, data) => {
     if (err) {
       trackError(err);
       return reply(`Budget error: ${err.message}`);
@@ -22,7 +22,7 @@ module.exports = bot => {
         respondWithBalance(reply, userId);
       } else if (/^budget /i.test(action)) {
         const [amount, description] = action.substr(7).split(",");
-        budget.bought(userId, { amount, description }, (err, data) => {
+        bankrupt.spend(userId, amount, description, (err, data) => {
           if (err) {
             trackError(err);
             return reply(`Budget broke: ${err.message}`);
