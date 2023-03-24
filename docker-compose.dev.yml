@@ -1,15 +1,19 @@
 version: "2"
 
+networks:
+  funhouse_funhouse:
+    external: true
+
 services:
   kowalski:
     env_file:
       - .env
-    build:
-      context: .
-      dockerfile: Dockerfile-timezone
+    build: .
     command: ["npx", "nodemon", "index.js"]
     restart: on-failure
     volumes:
       - /Users/dillon/git/DATAS:/data
       - .:/code/
       - /code/node_modules/
+    networks:
+      - funhouse_funhouse

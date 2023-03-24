@@ -1,4 +1,4 @@
-const { paycheck } = require("@dillonchr/funhouse");
+const { bankrupt } = require("@dillonchr/funhouse");
 const moment = require("moment");
 const { trackError } = require("../utils");
 const is = {
@@ -34,7 +34,7 @@ module.exports = bot => {
     }
 
     if (is.balance(action)) {
-      paycheck.balance((err, bal) => {
+      bankrupt.balance(message.channelID, (err, bal) => {
         if (err) {
           trackError(err);
           reply(`Probalo! ${err.message}`);
@@ -52,7 +52,7 @@ module.exports = bot => {
 
         message.react("👌");
 
-        paycheck.spend(price, async (err, result) => {
+        bankrupt.spend(message.channelID, price, "f", async (err, result) => {
           if (err) {
             trackError(err);
             reply(`Paycheck error: ${err.message}`);
@@ -78,23 +78,18 @@ module.exports = bot => {
         reply(`Paycheck debit error: ${err.message}`);
       }
     } else if (is.reset(action)) {
-      paycheck.balance((err, bal) => {
-        if (err) {
-          reply("Oops");
-          trackError(err);
-        } else {
-          const leftovers = bal.balance;
-
-          paycheck.reset(action.substr(5).trim(), (err, result) => {
-            if (err) {
-              trackError(err);
-              reply(`Paycheck error: ${err.message}`);
-            } else {
-              reply(`Paycheck balance reset to $${result.balance} :+1:`);
-            }
-          });
+      bankrupt.reset(
+        message.channelID,
+        action.substr(5).trim(),
+        (err, result) => {
+          if (err) {
+            trackError(err);
+            reply(`Paycheck error: ${err.message}`);
+          } else {
+            reply(`Paycheck balance reset to $${result.balance} :+1:`);
+          }
         }
-      });
+      );
     }
   });
 };
