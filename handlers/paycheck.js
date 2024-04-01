@@ -1,4 +1,4 @@
-const { paycheck } = require("@dillonchr/funhouse");
+const { bankrupt } = require("@dillonchr/funhouse");
 const moment = require("moment");
 const { trackError } = require("../utils");
 const is = {
@@ -22,7 +22,7 @@ module.exports = (bot) => {
     }
 
     if (is.balance(action) && !is.budget(action)) {
-      paycheck.balance(async (err, bal) => {
+      bankrupt.balance(message.channelId, async (err, bal) => {
         if (err) {
           trackError(err);
           await reply(`Probalo! ${err.message}`);
@@ -38,7 +38,7 @@ module.exports = (bot) => {
           return await reply(`\`${price}\` isn\'t a proper amount.`);
         }
 
-        paycheck.spend(price, async (err, result) => {
+        bankrupt.spend(message.channelId, price, "f", async (err, result) => {
           if (err) {
             trackError(err);
             await reply(`Paycheck error: ${err.message}`);
@@ -57,21 +57,12 @@ module.exports = (bot) => {
         await reply(`Paycheck debit error: ${err.message}`);
       }
     } else if (is.reset(action)) {
-      paycheck.balance(async (err, bal) => {
+      bankrupt.reset(message.channelId, action.substr(5).trim(), async (err, result) => {
         if (err) {
-          await reply("Oops");
           trackError(err);
+          await reply(`Paycheck error: ${err.message}`);
         } else {
-          const leftovers = bal.balance;
-
-          paycheck.reset(action.substr(5).trim(), async (err, result) => {
-            if (err) {
-              trackError(err);
-              await reply(`Paycheck error: ${err.message}`);
-            } else {
-              await reply(`Paycheck balance reset to $${result.balance} :+1:`);
-            }
-          });
+          await reply(`Paycheck balance reset to $${result.balance} :+1:`);
         }
       });
     }

@@ -16,10 +16,10 @@
     "@dillonchr/fetch": "^1.0.1",
     "@dillonchr/funhouse": "^2.0.0",
     "@dillonchr/reminders": "^1.0.0",
-    "discord.js": "^14.3.0",
+    "discord.js": "^14.8.0",
     "dotenv": "^4.0.0",
     "moment": "^2.22.2",
     "raven": "^2.6.3",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.1.6"
   }
 }
