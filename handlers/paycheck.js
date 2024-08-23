@@ -63,7 +63,7 @@ module.exports = bot => {
       }
 
       const remainingBal = spend(message.channelId, price);
-      await jazzedUpReply(reply, `${emote()} $${remainingBal}`);
+      await jazzedUpReply(reply, `${emote()} $${remainingBal.toFixed(2)}`);
       return;
     }
 
