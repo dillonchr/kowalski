@@ -28,13 +28,11 @@ function reset(id, amount = DefaultPaycheckAmt) {
   const linkedBudgetConfig = register[`linked-budget-${id}`];
   if (null != linkedBudgetConfig) {
     const { ids, cut } = linkedBudgetConfig;
-    const prevBalance = register[id];
-    const splitBalance = prevBalance > 0 ? prevBalance * 0.1 : 0;
-    const beginningBal = splitBalance + cut / ids.length;
+    const beginningBal = cut / ids.length;
     for (const budgetId of ids) {
       reset(budgetId, balance(budgetId) + beginningBal);
+      amount -= beginningBal;
     }
-    amount -= cut;
   }
   register[id] = amount;
   save(register);

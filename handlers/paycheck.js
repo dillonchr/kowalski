@@ -42,30 +42,40 @@ module.exports = bot => {
 
     const { reply } = message;
 
-    // balance get
     if (is.balance(action)) {
       await jazzedUpReply(reply, `You have ${balance(message.channelId)}`);
       return;
-      // spend get
-    } else if (is.debit(action)) {
-      const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
+    }
 
+    if (is.debit(action)) {
+      const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
       if (isNaN(price)) {
-        return await reply(`Be reasonable! \`${price}\` isn\'t a proper amount.`);
+        await reply(`Be reasonable! \`${price}\` isn\'t a proper amount.`);
+        return;
       }
 
       const remainingBal = spend(message.channelId, price);
       await jazzedUpReply(reply, `${emote()} $${remainingBal}`);
+      return;
+    }
 
-      // reset get
-    } else if (is.reset(action)) {
+    if (is.reset(action)) {
       const amount = parseFloat(action.substr(5).trim());
       if (isNaN(amount)) {
-        await reply(`Reset amount seems less than legit. ${action.substr(5).trim()}`);
-      } else {
-        // all good
-        await jazzedUpReply(`Paycheck balance reset to $${reset(message.channelId, amount)}`);
+        await reply(
+          `Reset amount seems less than legit. ${action.substr(5).trim()}`
+        );
+        return;
       }
+
+      // all good
+      await jazzedUpReply(
+        `Remaining balance before paycheck reset: ${balance(message.channelId)}`
+      );
+      await jazzedUpReply(
+        `Paycheck balance reset to $${reset(message.channelId, amount)}`
+      );
+      return;
     }
   });
 };
