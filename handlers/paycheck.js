@@ -1,70 +1,71 @@
-const { bankrupt } = require("@dillonchr/funhouse");
 const moment = require("moment");
-const { trackError } = require("../utils");
+const { balance, spend, reset } = require("../pkgs/bankrupt/bankrupt");
+
 const is = {
-  balance: (s) => /^balance/i.test(s),
-  help: (s) => /^help$/i.test(s),
-  debit: (s) => /([\d.-]+),(.*)$/.test(s),
-  budget: (s) => /^budget /i.test(s),
-  reset: (s) => /^reset /i.test(s),
+  balance: s => /^balance/i.test(s),
+  help: s => /^help$/i.test(s),
+  debit: s => /([\d.-]+),(.*)$/.test(s),
+  budget: s => /^budget /i.test(s),
+  reset: s => /^reset /i.test(s),
+  eatingOut: s => /^food /i.test(s),
+  shopping: s => /^shop(ping)? /i.test(s)
 };
 
-const EMOJIS = ["🤑", "👑", "💸", "💵", "💰", "💳", "⚖️", "🌼", "💶", "🥇", "🌝"];
+const EMOJIS = [
+  "🤑",
+  "👑",
+  "💸",
+  "💵",
+  "💰",
+  "💳",
+  "⚖️",
+  "🌼",
+  "💶",
+  "🥇",
+  "🌝"
+];
 const emote = () => EMOJIS[~~(Math.random() * EMOJIS.length)];
 
-module.exports = (bot) => {
-  bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, async (message) => {
-    const action = message.content.trim();
-    const { reply } = message;
+function jazzedUpReply(reply, replyStr) {
+  return reply(
+    replyStr.replace(/\$100.00$/, "💯").replace(/\$-?0\.00$/, "$0 💀")
+  );
+}
 
-    function jazzedUpReply(replyStr) {
-      return reply(replyStr.replace(/\$100.00$/, "💯").replace(/\$-?0\.00$/, "$0 💀"));
+module.exports = bot => {
+  bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, async message => {
+    const action = message.content.trim();
+
+    if (is.budget(action)) {
+      return;
     }
 
-    if (is.balance(action) && !is.budget(action)) {
-      bankrupt.balance(message.channelId, async (err, bal) => {
-        if (err) {
-          trackError(err);
-          await reply(`Probalo! ${err.message}`);
-        } else {
-          await jazzedUpReply(`You have $${bal.balance}`);
-        }
-      });
-    } else if (is.debit(action) && !is.budget(action)) {
-      try {
-        const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
+    const { reply } = message;
 
-        if (isNaN(price)) {
-          return await reply(`\`${price}\` isn\'t a proper amount.`);
-        }
+    // balance get
+    if (is.balance(action)) {
+      await jazzedUpReply(reply, `You have ${balance(message.channelId)}`);
+      return;
+      // spend get
+    } else if (is.debit(action)) {
+      const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
 
-        bankrupt.spend(message.channelId, price, "f", async (err, result) => {
-          if (err) {
-            trackError(err);
-            await reply(`Paycheck error: ${err.message}`);
-          } else {
-            try {
-              await jazzedUpReply(`${emote()} $${result.balance}`);
-            } catch (err) {
-              if (/Missing Permissions/i.test(err.message)) {
-                console.log("Need to give 'Modify Channel' permissions to Kowalski");
-              }
-            }
-          }
-        });
-      } catch (err) {
-        trackError(err);
-        await reply(`Paycheck debit error: ${err.message}`);
+      if (isNaN(price)) {
+        return await reply(`Be reasonable! \`${price}\` isn\'t a proper amount.`);
       }
+
+      const remainingBal = spend(message.channelId, price);
+      await jazzedUpReply(reply, `${emote()} $${remainingBal}`);
+
+      // reset get
     } else if (is.reset(action)) {
-      bankrupt.reset(message.channelId, action.substr(5).trim(), async (err, result) => {
-        if (err) {
-          trackError(err);
-          await reply(`Paycheck error: ${err.message}`);
-        } else {
-          await reply(`Paycheck balance reset to $${result.balance} :+1:`);
-        }
-      });
+      const amount = parseFloat(action.substr(5).trim());
+      if (isNaN(amount)) {
+        await reply(`Reset amount seems less than legit. ${action.substr(5).trim()}`);
+      } else {
+        // all good
+        await jazzedUpReply(`Paycheck balance reset to $${reset(message.channelId, amount)}`);
+      }
     }
   });
 };
