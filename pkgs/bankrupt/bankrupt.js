@@ -44,5 +44,5 @@ function reset(id, amount = DefaultPaycheckAmt) {
 module.exports = {
   balance,
   spend,
-  reset,
+  reset
 };

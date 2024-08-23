@@ -1,5 +1,9 @@
 const moment = require("moment");
-const { balance, spend, reset } = require("../pkgs/bankrupt/bankrupt");
+const {
+  balance: originalBalance,
+  spend,
+  reset
+} = require("../pkgs/bankrupt/bankrupt");
 
 const is = {
   balance: s => /^balance/i.test(s),
@@ -25,6 +29,10 @@ const EMOJIS = [
   "🌝"
 ];
 const emote = () => EMOJIS[~~(Math.random() * EMOJIS.length)];
+
+function balance(id) {
+  return "$" + originalBalance(id).toFixed(2);
+}
 
 function jazzedUpReply(reply, replyStr) {
   return reply(
