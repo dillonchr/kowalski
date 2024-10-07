@@ -1,32 +1,37 @@
-const { bankrupt } = require("@dillonchr/funhouse");
+const {
+  formatAmount,
+  formattedBalance,
+  spend,
+  reset
+} = require("../pkgs/bankrupt/bankrupt");
 const { trackError } = require("../utils/index");
 
-const respondWithBalance = (reply, userId) => {
-  bankrupt.balance(userId, (err, data) => {
-    if (err) {
-      trackError(err);
-      return reply(`Budget error: ${err.message}`);
-    }
-    reply(`Your budget is at **$${data.balance}**`);
-  });
-};
+module.exports = bot => {
+  bot.hearsAnythingInChannel(
+    process.env.PAYCHECK_CHANNEL_ID,
+    async ({ reply, content, author }) => {
+      const action = content.trim();
+      const userId = author.id;
 
-module.exports = (bot) => {
-  bot.hearsAnythingInChannel(process.env.PAYCHECK_CHANNEL_ID, ({ reply, content, author }) => {
-    const action = content.trim();
-    const userId = author.id;
+      if (/^budget balance/i.test(action)) {
+        await reply(
+          `@${author.username}'s budget: ${formattedBalance(userId)}`
+        );
+        return;
+      }
 
-    if (/^budget balance/i.test(action)) {
-      respondWithBalance(reply, userId);
-    } else if (/^budget /i.test(action)) {
-      const [amount, description] = action.substr(7).split(",");
-      bankrupt.spend(userId, amount, description, (err, data) => {
-        if (err) {
-          trackError(err);
-          return reply(`Budget broke: ${err.message}`);
+      if (/^budget /i.test(action)) {
+
+        const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
+        if (isNaN(price)) {
+          await reply(`Be reasonable! \`${price}\` isn\'t a proper amount.`);
+          return;
         }
-        reply(`@${author.username}: $${data.balance}`);
-      });
+
+        await reply(
+          `@${author.username}: ${formatAmount(spend(userId, price))}`
+        );
+      }
     }
-  });
+  );
 };

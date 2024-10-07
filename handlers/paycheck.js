@@ -1,6 +1,7 @@
 const moment = require("moment");
 const {
-  balance: originalBalance,
+  formatAmount,
+  formattedBalance,
   spend,
   reset
 } = require("../pkgs/bankrupt/bankrupt");
@@ -17,22 +18,25 @@ const is = {
 
 const EMOJIS = [
   "🤑",
-  "👑",
   "💸",
   "💵",
   "💰",
   "💳",
-  "⚖️",
-  "🌼",
   "💶",
-  "🥇",
-  "🌝"
+  "🪙",
+  "🧀",
+  "🍞",
+  "🥓",
+  "🏦",
+  "🏧",
+  "🫘",
+  "🦴",
+  "🥬",
+  "🎂",
+  "📃",
+  "🥗"
 ];
 const emote = () => EMOJIS[~~(Math.random() * EMOJIS.length)];
-
-function balance(id) {
-  return "$" + originalBalance(id).toFixed(2);
-}
 
 function jazzedUpReply(reply, replyStr) {
   return reply(
@@ -50,8 +54,14 @@ module.exports = bot => {
 
     const { reply } = message;
 
+    /*
+     * BALANCE
+     */
     if (is.balance(action)) {
-      await jazzedUpReply(reply, `You have ${balance(message.channelId)}`);
+      await jazzedUpReply(
+        reply,
+        `You have ${formattedBalance(message.channelId)}`
+      );
       return;
     }
 
@@ -63,7 +73,7 @@ module.exports = bot => {
       }
 
       const remainingBal = spend(message.channelId, price);
-      await jazzedUpReply(reply, `${emote()} $${remainingBal.toFixed(2)}`);
+      await jazzedUpReply(reply, `${emote()} ${formatAmount(remainingBal)}`);
       return;
     }
 
@@ -78,10 +88,16 @@ module.exports = bot => {
 
       // all good
       await jazzedUpReply(
-        `Remaining balance before paycheck reset: ${balance(message.channelId)}`
+        reply,
+        `Remaining balance before paycheck reset: ${formattedBalance(
+          message.channelId
+        )}`
       );
       await jazzedUpReply(
-        `Paycheck balance reset to $${reset(message.channelId, amount)}`
+        reply,
+        `Paycheck balance reset to ${formatAmount(
+          reset(message.channelId, amount)
+        )}`
       );
       return;
     }

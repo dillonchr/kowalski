@@ -5,6 +5,12 @@ const DefaultPaycheckAmt = BANKRUPT_DEFAULT_PAYCHECK_AMOUNT || 1000;
 // this is the in-memory paycheck and budget information
 let register = {};
 
+const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  trailingZeroDisplay: "stripIfInteger"
+});
+
 async function onInit() {
   register = await read();
 }
@@ -14,6 +20,12 @@ function balance(id) {
     register[id] = 0.0;
   }
   return register[id];
+}
+function formattedBalance(id) {
+  return formatAmount(balance(id));
+}
+function formatAmount(amount) {
+  return USD_FORMATTER.format(amount);
 }
 
 function spend(id, amount) {
@@ -43,6 +55,8 @@ function reset(id, amount = DefaultPaycheckAmt) {
 
 module.exports = {
   balance,
+  formatAmount,
+  formattedBalance,
   spend,
   reset
 };
