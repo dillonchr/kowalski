@@ -44,7 +44,7 @@ function regGetResetAmt(id) {
 }
 
 function reset(id) {
-  const amount = regGetResetAmt(id) ?? DefaultPaycheckAmt;
+  let amount = regGetResetAmt(id) ?? DefaultPaycheckAmt;
   for (const [budgetId, beginningBal] of budgetConfigRecs(id)) {
     reset(budgetId, balance(budgetId) + beginningBal);
     amount -= beginningBal;
