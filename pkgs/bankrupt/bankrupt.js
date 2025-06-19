@@ -39,17 +39,26 @@ function spend(id, amount) {
 function regResetKey(id) {
   return `reset-${id}`;
 }
+
 function regGetResetAmt(id) {
   return register[regResetKey(id)];
+}
+
+function _pay(id, amount) {
+  if (null != id) {
+    register[id] = balance(id) + amount;
+    // save(register); TODO: reinstate if later it's not called in reset only
+    // return register[id];
+  }
 }
 
 function reset(id) {
   let amount = regGetResetAmt(id) ?? DefaultPaycheckAmt;
   for (const [budgetId, beginningBal] of budgetConfigRecs(id)) {
-    reset(budgetId, balance(budgetId) + beginningBal);
+    _pay(budgetId, beginningBal);
     amount -= beginningBal;
   }
-  const dateOfMon = (new Date()).getDate();
+  const dateOfMon = new Date().getDate();
   const paycheckNumber = dateOfMon < 12 || 26 < dateOfMon ? 1 : 2;
   register[id] = amount - autoDebitAmount(id, paycheckNumber);
   save(register);
