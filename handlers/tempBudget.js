@@ -17,7 +17,7 @@ const saveTransactions = () => {
     TRANS_PATH,
     JSON.stringify(tempBudgetTransactions),
     "utf-8",
-    err => {
+    (err) => {
       if (err) {
         trackError(err);
       }
@@ -28,7 +28,7 @@ const saveTransactions = () => {
 const addTrans = (price, description) => {
   tempBudgetTransactions.push({
     price,
-    description
+    description,
   });
   saveTransactions();
 };
@@ -43,11 +43,11 @@ const getBalance = () => {
 };
 
 const is = {
-  balance: s => /^balance/i.test(s),
-  debit: s => /([\d.-]+),(.*)$/.test(s)
+  balance: (s) => /^balance/i.test(s),
+  debit: (s) => /([\d.-]+),(.*)$/.test(s),
 };
 
-module.exports = bot => {
+module.exports = (bot) => {
   bot.hearsAnythingInChannel(
     process.env.TEMP_BUDGET_CHANNEL_ID,
     ({ reply, content }) => {

@@ -25,7 +25,7 @@ function toDedupedIds(xrange) {
   return Array.from(toIds(xrange)).filter((p, i, a) => a.indexOf(p) === i);
 }
 
-module.exports = bot => {
+module.exports = (bot) => {
   bot.hears(["shop"], async ({ channel, content, reply }) => {
     if (null != channel && "dm" === channel.type) {
       const action = content.trim().split(" ");
@@ -34,15 +34,17 @@ module.exports = bot => {
           case "add":
             {
               const item = action.join(" ");
-              db.run("INSERT INTO shop (name) VALUES (?)", [item], function (
-                err
-              ) {
-                if (err) {
-                  reply(`Uh oh! Couldn't add ${item}`);
-                } else {
-                  reply(printItem(this.lastID, item, "added!"));
+              db.run(
+                "INSERT INTO shop (name) VALUES (?)",
+                [item],
+                function (err) {
+                  if (err) {
+                    reply(`Uh oh! Couldn't add ${item}`);
+                  } else {
+                    reply(printItem(this.lastID, item, "added!"));
+                  }
                 }
-              });
+              );
             }
             break;
 

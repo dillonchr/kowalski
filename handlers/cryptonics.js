@@ -1,11 +1,11 @@
 const { cryptonics } = require("@dillonchr/funhouse");
 const { trackError } = require("../utils");
 const is = {
-  encrypt: s => /^encrypt \d+;/i.test(s),
-  decrypt: s => /^decrypt \d+;/i.test(s)
+  encrypt: (s) => /^encrypt \d+;/i.test(s),
+  decrypt: (s) => /^decrypt \d+;/i.test(s),
 };
 
-module.exports = bot => {
+module.exports = (bot) => {
   bot.hears(["encrypt", "decrypt"], ({ reply, content }) => {
     if (is.encrypt(content) || is.decrypt(content)) {
       const firstSemi = content.indexOf(";");

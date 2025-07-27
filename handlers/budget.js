@@ -2,11 +2,11 @@ const {
   formatAmount,
   formattedBalance,
   spend,
-  reset
+  reset,
 } = require("../pkgs/bankrupt/bankrupt");
 const { trackError } = require("../utils/index");
 
-module.exports = bot => {
+module.exports = (bot) => {
   bot.hearsAnythingInChannel(
     process.env.PAYCHECK_CHANNEL_ID,
     async ({ reply, content, author }) => {
@@ -21,7 +21,6 @@ module.exports = bot => {
       }
 
       if (/^budget /i.test(action)) {
-
         const [ignore, price] = action.match(/([\d.-]+),(.*)$/);
         if (isNaN(price)) {
           await reply(`Be reasonable! \`${price}\` isn\'t a proper amount.`);
