@@ -1,8 +1,8 @@
-const path = require("path");
-const fs = require("fs/promises");
+import path from "path";
+import fs from "fs/promises";
 
 const { BANKRUPT_DIRNAME: BankruptDir } = process.env;
-const RegisterPath = path.join(BankruptDir, "register.json");
+const RegisterPath = path.join(BankruptDir || "", "register.json");
 let timerId = -1;
 
 async function save(data) {
@@ -29,7 +29,7 @@ async function read() {
   }
 }
 
-module.exports = {
+export {
   read,
   save,
 };

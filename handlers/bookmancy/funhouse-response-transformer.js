@@ -1,4 +1,4 @@
-module.exports = (searchTitle, searchUrl, x = [], isEbay = false) => {
+export default (searchTitle, searchUrl, x = [], isEbay = false) => {
   const MAX_RESULTS = 50;
   const RESULTS_LIMIT = 7;
   /**

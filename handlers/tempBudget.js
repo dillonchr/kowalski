@@ -1,5 +1,5 @@
-const fs = require("fs");
-const { trackError } = require("../utils");
+import fs from "fs";
+import { trackError } from "../utils/index.js";
 const TRANS_PATH = "/data/tempBudgetTrans.json";
 
 let tempBudgetTransactions;
@@ -47,7 +47,7 @@ const is = {
   debit: (s) => /([\d.-]+),(.*)$/.test(s),
 };
 
-module.exports = (bot) => {
+export default (bot) => {
   bot.hearsAnythingInChannel(
     process.env.TEMP_BUDGET_CHANNEL_ID,
     ({ reply, content }) => {

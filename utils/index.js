@@ -1,7 +1,7 @@
-const trackError = require('./track-error');
-const whisper = require('./whisper');
+import trackError from './track-error.js';
+import whisper from './whisper.js';
 
-module.exports = {
+export {
     trackError,
     whisper
 };

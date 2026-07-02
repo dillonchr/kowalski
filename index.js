@@ -1,7 +1,18 @@
-require("dotenv").config();
-const os = require("os");
-const trackError = require("./utils/track-error");
-const { Client, GatewayIntentBits, Partials } = require("discord.js");
+import dotenv from "dotenv";
+dotenv.config();
+import os from "os";
+import trackError from "./utils/track-error.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
+
+import paycheckHandler from "./handlers/paycheck.js";
+import budgetHandler from "./handlers/budget.js";
+import tempBudgetHandler from "./handlers/tempBudget.js";
+import gdqHandler from "./handlers/gdq.js";
+import bookmancyHandler from "./handlers/bookmancy/index.js";
+import inflationHandler from "./handlers/inflation.js";
+import cryptonicsHandler from "./handlers/cryptonics.js";
+import remindersHandler from "./handlers/reminders.js";
+import shopHandler from "./handlers/shop/index.js";
 
 if (!process.env.DISCORD_TOKEN) {
   trackError(new Error("no token in environment"));
@@ -62,15 +73,15 @@ const bot = {
   },
 };
 
-require("./handlers/paycheck")(bot);
-require("./handlers/budget")(bot);
-require("./handlers/tempBudget")(bot);
-require("./handlers/gdq")(bot);
-require("./handlers/bookmancy/index")(bot);
-require("./handlers/inflation")(bot);
-require("./handlers/cryptonics")(bot);
-require("./handlers/reminders")(bot);
-require("./handlers/shop")(bot);
+paycheckHandler(bot);
+budgetHandler(bot);
+tempBudgetHandler(bot);
+gdqHandler(bot);
+bookmancyHandler(bot);
+inflationHandler(bot);
+cryptonicsHandler(bot);
+remindersHandler(bot);
+shopHandler(bot);
 
 bot.hears(["uptime"], ({ reply }) => {
   let uptime = process.uptime();

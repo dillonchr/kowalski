@@ -1,4 +1,4 @@
-const { read, save } = require("./persist.js");
+import { read, save } from "./persist.js";
 const { BANKRUPT_DEFAULT_PAYCHECK_AMOUNT } = process.env;
 const DefaultPaycheckAmt = BANKRUPT_DEFAULT_PAYCHECK_AMOUNT || 1000;
 
@@ -132,7 +132,7 @@ function autoDebitListAll(id) {
 
 /* do not await */ onInit();
 
-module.exports = {
+export {
   autoDebitAdd,
   autoDebitGetList,
   autoDebitListAll,

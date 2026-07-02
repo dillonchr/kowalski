@@ -1,6 +1,7 @@
-const { add, connect } = require("@dillonchr/reminders");
+import remindersPkg from "@dillonchr/reminders";
+const { add, connect } = remindersPkg;
 
-module.exports = (bot) => {
+export default (bot) => {
   bot.hears(["remind "], ({ reply, content, author }) => {
     const command = content.trim().replace(/^remind /i, "");
     const userId = author.id;

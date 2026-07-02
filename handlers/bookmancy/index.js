@@ -1,7 +1,8 @@
-const { bookmancy } = require("@dillonchr/funhouse");
-const { trackError } = require("../../utils");
-const funhouseResponseTransformer = require("./funhouse-response-transformer");
-const confirmMessage = require("./confirmation-messages");
+import funhousePkg from "@dillonchr/funhouse";
+const { bookmancy } = funhousePkg;
+import { trackError } from "../../utils/index.js";
+import funhouseResponseTransformer from "./funhouse-response-transformer.js";
+import confirmMessage from "./confirmation-messages.js";
 const is = {
   abe: s => /^abe /i.test(s),
   ebay: s => /^ebay /i.test(s),
@@ -9,7 +10,7 @@ const is = {
   live: s => /^live /i.test(s)
 };
 
-module.exports = bot => {
+export default bot => {
   bot.hears(["ebay", "abe"], ({ reply, content }) => {
     if (is.abe(content)) {
       reply(confirmMessage());

@@ -1,6 +1,7 @@
-const { gdq } = require("@dillonchr/funhouse");
-const { trackError } = require("../utils");
-const moment = require("moment");
+import funhousePkg from "@dillonchr/funhouse";
+const { gdq } = funhousePkg;
+import { trackError } from "../utils/index.js";
+import moment from "moment";
 
 const timestampToDisplayTime = (timestamp) => {
   return moment(timestamp).utcOffset("-05:00").format("h:mm A");
@@ -31,7 +32,7 @@ function handleGdq(err, g) {
   }
 }
 
-module.exports = (bot) => {
+export default (bot) => {
   bot.hears(["gdq", ":video_game:"], ({ reply }) => {
     gdq(handleGdq);
   });

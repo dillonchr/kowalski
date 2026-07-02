@@ -1,5 +1,5 @@
-const { trackError } = require("../../utils");
-const sqlite3 = require("sqlite3");
+import { trackError } from "../../utils/index.js";
+import sqlite3 from "sqlite3";
 const DB_PATH = "/data/shop.sqlite";
 const db = new sqlite3.Database(DB_PATH);
 
@@ -25,7 +25,7 @@ function toDedupedIds(xrange) {
   return Array.from(toIds(xrange)).filter((p, i, a) => a.indexOf(p) === i);
 }
 
-module.exports = (bot) => {
+export default (bot) => {
   bot.hears(["shop"], async ({ channel, content, reply }) => {
     if (null != channel && "dm" === channel.type) {
       const action = content.trim().split(" ");

@@ -1,12 +1,12 @@
-const {
+import {
   formatAmount,
   formattedBalance,
   spend,
   reset,
-} = require("../pkgs/bankrupt/bankrupt");
-const { trackError } = require("../utils/index");
+} from "../pkgs/bankrupt/bankrupt.js";
+import { trackError } from "../utils/index.js";
 
-module.exports = (bot) => {
+export default (bot) => {
   bot.hearsAnythingInChannel(
     process.env.PAYCHECK_CHANNEL_ID,
     async ({ reply, content, author }) => {

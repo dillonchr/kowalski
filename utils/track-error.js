@@ -1,4 +1,4 @@
-const Raven = require('raven');
+import Raven from 'raven';
 Raven.config(process.env.SENTRY_URL).install();
 
-module.exports = error => Raven.captureException(error);
+export default error => Raven.captureException(error);

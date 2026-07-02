@@ -1,6 +1,7 @@
-const { inflation } = require("@dillonchr/funhouse");
+import funhousePkg from "@dillonchr/funhouse";
+const { inflation } = funhousePkg;
 
-module.exports = bot => {
+export default bot => {
   bot.hears(["how much was "], ({ reply, content }) => {
     const matches = content.match(/\$([\d\.]+) in (\d{4})\??$/i);
 

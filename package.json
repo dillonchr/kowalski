@@ -1,6 +1,7 @@
 {
   "name": "kowalski",
   "version": "1.0.0",
+  "type": "module",
   "description": "A discord bot that grew up in slackville",
   "main": "index.js",
   "engines": {
@@ -8,7 +9,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "jest --ci"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --ci"
   },
   "author": "dillonchr",
   "license": "GPL-2.0",
@@ -26,5 +27,9 @@
     "tabWidth": 2,
     "trailingComma": "es5",
     "max_line_length": 120
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.14"
   }
 }
