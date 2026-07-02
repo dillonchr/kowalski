@@ -5,7 +5,14 @@
   "description": "A discord bot that grew up in slackville",
   "main": "index.js",
   "engines": {
-    "node": "18.9.0"
+    "node": ">=20.0.0"
+  },
+  "overrides": {
+    "cookie": "^0.7.2",
+    "uuid": "^11.1.1",
+    "tar": "^7.5.19",
+    "@tootallnate/once": "^2.0.1",
+    "undici": "^6.27.0"
   },
   "scripts": {
     "start": "node index.js",
